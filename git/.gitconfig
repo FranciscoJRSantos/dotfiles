@@ -1,0 +1,8 @@
+[color]
+	ui = auto
+[user]
+	name = FranciscoJRSantos
+	email = franciscojrsantos1997@gmail.com
+    signingkey = 21D0EA9F95EF54CB
+[core]
+    editor = nvim
