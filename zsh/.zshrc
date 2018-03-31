@@ -36,9 +36,9 @@ export PATH="$HOME/bin:$PATH"
 
 # Preferred editor for local and remote sessions
  if [[ -n $SSH_CONNECTION ]]; then
-   export EDITOR='nvim'
- else
    export EDITOR='vim'
+ else
+   export EDITOR='nvim'
  fi
 
 # Compilation flags
@@ -54,6 +54,7 @@ alias nvimrc="nvim ~/.config/nvim/init.vim"
 # Add RVM to PATH for scripting. Make sure this is the last PATH variable change.
 export PATH="$PATH:$HOME/.rvm/bin"
 
-source /Users/franciscosantos/.oh-my-zsh/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 # Pywal colorscheme 
  (cat ~/.cache/wal/sequences &) 
+
+source /usr/local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
