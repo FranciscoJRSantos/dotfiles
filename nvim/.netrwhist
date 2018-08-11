@@ -1,0 +1,8 @@
+let g:netrw_dirhistmax  =10
+let g:netrw_dirhist_cnt =6
+let g:netrw_dirhist_1='/Users/franciscosantos/Documents/my-projects/graph-traversal/src'
+let g:netrw_dirhist_2='/Users/franciscosantos/Documents/my-projects/graph-traversal'
+let g:netrw_dirhist_3='/Users/franciscosantos/Documents/my-projects/graph-traversal/src'
+let g:netrw_dirhist_4='/Users/franciscosantos/Documents/my-projects/graph-traversal/src/views'
+let g:netrw_dirhist_5='/Users/franciscosantos/Documents/my-projects/graph-traversal/src/views/components'
+let g:netrw_dirhist_6='/Users/franciscosantos'
