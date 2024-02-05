@@ -1,0 +1,18 @@
+[user]
+    name = Francisco Santos
+    email = francisco.santos@redlightsoft.com
+    username = FranciscoJRSantos
+[core]
+    editor = vim
+[alias]	
+    st = status
+    co = checkout
+    ci = commit
+    ds = diff --staged
+    remame = branch -m
+[init]
+	defaultBranch = main
+[github]
+	user = FranciscoJRSantos
+[gitlab]
+	user = FranciscoJRSantos
