@@ -1,0 +1,10 @@
+{
+  "layer": "top",
+  "position": "bottom",
+  "margin": "0px",
+
+  "include": ["~/.config/waybar/modules.json"],
+  "modules-left": ["hyprland/workspaces","tray"],
+  "modules-center": ["clock"],
+  "modules-right": ["group/sys-info","battery"]
+}

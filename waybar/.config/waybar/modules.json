@@ -1,0 +1,141 @@
+{
+  "battery": {
+    "bat": "BAT0",
+    "format": "{icon}<span><b>{capacity}</b></span>",
+    "format-icons": [
+      "󰛞 󱢠 󱢠 󱢠 󱢠 ",
+      "󰣐 󱢠 󱢠 󱢠 󱢠 ",
+      "󰣐 󰛞 󱢠 󱢠 󱢠 ",
+      "󰣐 󰣐 󱢠 󱢠 󱢠 ",
+      "󰣐 󰣐 󰛞 󱢠 󱢠 ",
+      "󰣐 󰣐 󰣐 󱢠 󱢠 ",
+      "󰣐 󰣐 󰣐 󰛞 󱢠 ",
+      "󰣐 󰣐 󰣐 󰣐 󱢠 ",
+      "󰣐 󰣐 󰣐 󰣐 󰛞 ",
+      "󰣐 󰣐 󰣐 󰣐 󰣐 "
+    ],
+    "format-time": "{H}hr & {m}min",
+    "format-warning": "<span color='#f9e2af'>{icon}</span><small><b>{capacity}</b></small>",
+    "interval": 60,
+    "max-length": 25,
+    "states": {
+      "critical": 15,
+      "good": 100,
+      "warning": 30
+    },
+    "tooltip-format": "{time} (󰚥 plugged), at {capacity}%",
+    "tooltip-format-charging": "{time} (󰢟 charging), at {capacity}%",
+    "tooltip-format-discharging": "{time} (󱧦 discharging), at {capacity}%"
+  },
+  "bluetooth": {
+    "format": "",
+    "format-connected": "󰂱 ",
+    "format-disabled": "󰂲",
+    "format-off": "󰂲",
+    "format-on": "",
+    "on-click": "blueberry",
+    "on-click-right": "rfkill toggle bluetooth",
+    "tooltip-format": "{controller_alias}\t{controller_address}\n\n{num_connections} connected",
+    "tooltip-format-connected": "{controller_alias}\t{controller_address}\n\n{num_connections} connected\n\n{device_enumerate}",
+    "tooltip-format-enumerate-connected": "{device_alias}\t{device_address}",
+    "tooltip-format-enumerate-connected-battery": "{device_alias}\t{device_address}\t󰥉{device_battery_percentage}%"
+  },
+  "clock": {
+    "format": "{:%H:%M %d/%m/%Y}",
+    "actions": {
+      "on-scroll-down": "shift_down",
+      "on-scroll-up": "shift_up"
+    },
+    "calendar": {
+      "format": {
+        "days": "<span weight='normal'>{}</span>",
+        "months": "<span color='#cdd6f4'><b>{}</b></span>",
+        "today": "<span color='#f38ba8' weight='700'><u>{}</u></span>",
+        "weekdays": "<span color='#f9e2af'><b>{}</b></span>",
+        "weeks": "<span color='#a6e3a1'><b>W{}</b></span>"
+      },
+      "mode": "month",
+      "mode-mon-col": 1,
+      "on-scroll": 1,
+      "weeks-pos": "right"
+    },
+    "interval": 60,
+    "tooltip-format": "<span color='#cdd6f4'><small>{calendar}</small></span>"
+  },
+  "group/sys-info": {
+    "modules": [
+      "network",
+      "bluetooth",
+      "temperature",
+      "group/brightness",
+      "idle_inhibitor",
+      "custom/dnd"
+    ],
+    "orientation": "horizontal"
+  },
+  "hyprland/workspaces": {
+    "active-only": false,
+    "all-outputs": false,
+    "format": "{icon} <sub>{name}</sub>",
+    "format-icons": {
+      "1": "",
+      "2": "",
+      "3": "",
+      "4": "",
+      "5": "",
+      "6": "",
+      "7": "",
+      "8": "",
+      "9": "",
+      "10": "",
+      "default": "",
+      "special": ""
+    },
+    "on-scroll-down": "hyprctl dispatch workspace e+1",
+    "on-scroll-up": "hyprctl dispatch workspace e-1"
+  },
+  "idle_inhibitor": {
+    "format": "{icon}",
+    "format-icons": {
+      "activated": " ",
+      "deactivated": " "
+    },
+    "tooltip": false
+  },
+  "custom/dnd": {
+    "exec": "if makoctl mode | grep -q do-not-disturb; then echo '{ \"text\": \"󰂛\" }'; else echo '{\"text\": \"󰂚\" }'; fi",
+    "interval": 5,
+    "on-click": "makoctl mode -t do-not-disturb",
+    "return-type": "json",
+    "tooltip": false
+  },
+  "network": {
+    "format": "{icon}",
+    "format-disconnected": "󰖪 ",
+    "format-ethernet": "󰈀 /{cidr}",
+    "format-icons": [
+      "󰤯 ",
+      "󰤟 ",
+      "󰤢 ",
+      "󰤥 ",
+      "󰤨 "
+    ],
+    "format-linked": "󰖩 ",
+    "format-wifi": "{icon}",
+    "interval": 30,
+    "on-click": "nm-connection-editor",
+    "on-click-right": "rfkill toggle wifi",
+    "tooltip": true,
+    "tooltip-format": "interface:\t{ifname}\n\nconnected to {essid} at {signalStrength}% strength",
+    "tooltip-format-disconnected": "interface: {ifname}\nconnected to {essid}\nat {signalStrength}% strength"
+  },
+  "tray": {
+    "icon-size": 18
+  },
+  "temperature": {
+    "critical-threshold": 80,
+    "tooltip-format": "{temperatureC}°C",
+    "format-critical": "",
+    "format": ""
+  }
+}

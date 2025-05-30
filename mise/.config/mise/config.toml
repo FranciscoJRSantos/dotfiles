@@ -1,0 +1,11 @@
+[tools]
+bun = "latest"
+go = "latest"
+node = "lts"
+python = "latest"
+ruby = "3.4.4"
+rust = "stable"
+usage = "latest"
+
+[settings]
+idiomatic_version_file_enable_tools = ["ruby"]

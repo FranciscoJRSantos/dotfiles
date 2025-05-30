@@ -1,0 +1,28 @@
+[user]
+	name = Francisco Santos
+	email = franciscojrsantos1997@gmail.com
+	username = FranciscoJRSantos
+[core]
+	editor = nvim
+[init]
+	defaultBranch = main
+[github]
+	user = FranciscoJRSantos
+[gitlab]
+	user = FranciscoJRSantos
+[fetch]
+	prune = true
+[filter "lfs"]
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+	required = true
+
+[includeIf "gitdir:~/Documents/projects/AIH/**"]
+  path = ~/Documents/projects/AIH/.gitconfig
+
+[includeIf "gitdir:~/Documents/projects/"]
+  path = ~/Documents/projects/.gitconfig
+
+[includeIf "gitdir:~/Documents/personal-projects/"]
+  path = ~/Documents/personal-projects/.gitconfig

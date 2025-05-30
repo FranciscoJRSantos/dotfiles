@@ -1,0 +1,41 @@
+font=Noto Sans 10
+border-size=1
+border-radius=8
+
+background-color=#303446
+text-color=#c6d0f5
+border-color=#8caaee
+progress-color=over #414559
+
+anchor=top-right
+width=350
+margin=10
+padding=10
+border-size=2
+max-icon-size=64
+default-timeout=2000
+
+icons=true
+icon-path=/usr/share/icons/Papirus-Light/16x16/status
+
+[urgency=low]
+text-color=#eeeeee
+
+[urgency=normal]
+text-color=#ffffff
+
+[urgency=high]
+border-color=#ef9f76
+
+[urgency=critical]
+text-color=#ffffff
+ 
+[app-name=sys-notif]
+layer=overlay
+history=0
+
+[mode=do-not-disturb]
+invisible=1
+
+[mode=do-not-disturb app-name=sys-notif]
+invisible=0

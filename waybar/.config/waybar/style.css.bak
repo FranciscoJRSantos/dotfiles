@@ -1,0 +1,152 @@
+@import url("frappe.css");
+
+* {
+    font-family: "FiraCode Nerd Font";
+    font-size: 20px;
+    min-height: 0;
+}
+
+#waybar {
+    color: @text;
+    background-color: transparent;
+}
+
+/* Space first and last modules evenly */
+.modules-right:last-child { margin-right: 1rem; }
+.modules-left:first-child { margin-left: 1rem; }
+
+/* Active and inactive states */
+#network.wifi {
+    color: @text;
+}
+#network.disabled,
+#network.disconnected,
+#bluetooth.disabled,
+#bluetooth.off
+{
+    color: alpha(@subtext0, 0.7);
+}
+
+
+/* Selecting every widget "group" */
+#workspaces,
+#battery,
+#custom-notification,
+#sys-info,
+box.modules-right > box.horizontal
+{
+    background-color: @base;
+    border-radius: 0.5rem;
+    border: @pink solid 2px;
+    margin: 0rem 0.5rem 0.5rem;
+    padding: 0.5rem 1rem;
+}
+
+/* Styling workspace */
+#workspaces,
+#workspaces button
+{
+    all: unset;
+}
+#workspaces {
+    background-color: @base;
+    margin: 0rem 0.5rem 0.5rem;
+    border: @pink solid 2px;
+    border-radius: 4px;
+}
+#workspaces > button {
+    padding: 0px 1.rem;
+    font-weight: 900;
+    border-radius: 0px;
+}
+#workspaces > button.empty {
+    color: @overlay0;
+}
+#workspaces > button.visible {
+    color: @overlay0;
+}
+#workspaces > button.active {
+    color: @blue;
+    background: alpha(@blue, 0.1);
+}
+#workspaces > button:hover {
+    background: alpha(@blue, 0.2);
+    color: @text;
+}
+#workspaces > button:first-child {
+    border-radius: 4px 0px 0px 4px;
+    padding-left: 2rem;
+}
+#workspaces > button:last-child {
+    border-radius: 0px 4px 4px 0px;
+    padding-right: 2rem;
+}
+
+
+/* Styling tray */
+#tray {
+    background-color: @base;
+    border-radius: 4px;
+    border: @pink solid 2px;
+    margin: 0rem 0.5rem 0.5rem;
+    padding: 0.5rem 1rem;
+}
+#tray .active image {
+    margin: 0px;
+    padding: 0px 0.5rem;
+}
+
+#network {
+  margin-right: 0.5rem;
+  margin-left: 0.5rem;
+}
+
+#bluetooth {
+  margin-right: 0.5rem;
+  margin-left: 0.5rem;
+}
+
+#temperature {
+  margin-right: 0.5rem;
+  margin-left: 0.5rem;
+}
+
+#idle_inhibitor {
+  margin-right: 0.5rem;
+  margin-left: 0.5rem;
+}
+
+#custom-dnd {
+  margin-right: 0.5rem;
+  margin-left: 0.5rem;
+}
+
+/* Styling the clock */
+#clock.date {
+    background-color: @base;
+    border: @pink solid 2px;
+    margin: 0rem 0.5rem 0.5rem;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+
+    font-weight: normal;
+}
+#clock.time {
+    background-color: @base;
+    border: @pink solid 2px;
+    margin: 0rem 0.5rem 0.5rem;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+}
+
+/* Styling tooltips */
+tooltip {
+    border-radius: 1.5rem;
+    background: @base;
+}
+tooltip > box {
+    padding: 1.5rem
+}
+tooltip label {
+    color: @text;
+}
