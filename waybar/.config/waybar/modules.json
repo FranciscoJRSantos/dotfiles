@@ -67,7 +67,6 @@
       "network",
       "bluetooth",
       "temperature",
-      "group/brightness",
       "idle_inhibitor",
       "custom/dnd"
     ],
@@ -102,13 +101,13 @@
     },
     "tooltip": false
   },
-  "custom/dnd": {
-    "exec": "if makoctl mode | grep -q do-not-disturb; then echo '{ \"text\": \"󰂛\" }'; else echo '{\"text\": \"󰂚\" }'; fi",
-    "interval": 5,
-    "on-click": "makoctl mode -t do-not-disturb",
-    "return-type": "json",
-    "tooltip": false
-  },
+  // "custom/dnd": {
+  //   "exec": "if makoctl mode | grep -q do-not-disturb; then echo '{ \"text\": \"󰂛\" }'; else echo '{\"text\": \"󰂚\" }'; fi",
+  //   "interval": 5,
+  //   "on-click": "makoctl mode -t do-not-disturb",
+  //   "return-type": "json",
+  //   "tooltip": false
+  // },
   "network": {
     "format": "{icon}",
     "format-disconnected": "󰖪 ",

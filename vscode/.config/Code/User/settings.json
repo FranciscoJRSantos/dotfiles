@@ -1,0 +1,135 @@
+{
+    "editor.formatOnSave": true,
+    "editor.suggest.insertMode": "replace",
+    "editor.linkedEditing": true,
+    "javascript.updateImportsOnFileMove.enabled": "always",
+    "launch": {},
+    "[json]": {},
+    "workbench.statusBar.visible": false,
+    "editor.minimap.enabled": false,
+    "update.showReleaseNotes": false,
+    "zenMode.centerLayout": false,
+    "zenMode.hideLineNumbers": false,
+    "zenMode.showTabs": "single",
+    "editor.lineNumbers": "on",
+    "[python]": {
+        "editor.defaultFormatter": "charliermarsh.ruff"
+    },
+    "gitlens.ai.model": "vscode",
+    "gitlens.ai.vscode.model": "copilot:gpt-4.1",
+    "containers.containerClient": "com.microsoft.visualstudio.containers.docker",
+    "containers.orchestratorClient": "com.microsoft.visualstudio.orchestrators.dockercompose",
+    "python.defaultInterpreterPath": "/sbin/python",
+    "python.analysis.typeCheckingMode": "standard",
+    "breadcrumbs.enabled": false,
+    "jupyter.askForKernelRestart": false,
+    "docker.extension.enableComposeLanguageServer": false,
+    "makefile.configureOnOpen": true,
+    "ty.inlayHints.variableTypes": false,
+    "workbench.iconTheme": "catppuccin-mocha",
+    "workbench.preferredDarkColorTheme": "Catppuccin Mocha",
+    "window.autoDetectColorScheme": true,
+    "workbench.preferredLightColorTheme": "Catppuccin Latte",
+    // To improve performance
+    "extensions.experimental.affinity": {
+        "vscodevim.vim": 1
+    },
+    "vim.leader": "<space>",
+    "vim.normalModeKeyBindingsNonRecursive": [
+        {
+            "before": [
+                "<leader>",
+                "w"
+            ],
+            "commands": [
+                "workbench.action.files.save"
+            ]
+        },
+        {
+            "before": [
+                "<leader>",
+                "d"
+            ],
+            "commands": [
+                "editor.action.deleteLines"
+            ]
+        },
+        {
+            "before": [
+                "<leader>",
+                "h"
+            ],
+            "commands": [
+                "workbench.action.focusLeftGroup"
+            ]
+        },
+        {
+            "before": [
+                "<leader>",
+                "l"
+            ],
+            "commands": [
+                "workbench.action.focusRightGroup"
+            ]
+        },
+        {
+            "before": [
+                "<leader>",
+                "k"
+            ],
+            "commands": [
+                "workbench.action.focusAboveGroup"
+            ]
+        },
+        {
+            "before": [
+                "<leader>",
+                "j"
+            ],
+            "commands": [
+                "workbench.action.focusBelowGroup"
+            ]
+        }
+    ],
+    "vim.statusBarColorControl": true,
+    "vim.useSystemClipboard": true,
+    "vim.incsearch": true,
+    "vim.useCtrlKeys": true,
+    "vim.handleKeys": {
+        "<C-a>": false,
+        "<C-f>": false,
+        "<C-h>": false,
+        "<C-l>": false,
+        "<C-u>": false,
+        "<C-v>": false,
+        "<C-w>": false,
+        "<C-x>": false,
+        "<C-z>": false,
+        "<C-p>": false
+    },
+    "workbench.colorCustomizations": {
+        "statusBar.background": "#005f5f",
+        "statusBar.noFolderBackground": "#005f5f",
+        "statusBar.debuggingBackground": "#005f5f",
+        "statusBar.foreground": "#ffffff",
+        "statusBar.debuggingForeground": "#ffffff"
+    },
+    "claudeCode.preferredLocation": "panel",
+    "claudeCode.initialPermissionMode": "plan",
+    "chat.mcp.gallery.enabled": true,
+    "window.menuBarVisibility": "compact",
+    "editor.fontSize": 18,
+    "claudeCode.selectedModel": "opusplan",
+    "github.copilot.enable": {
+        "*": false
+    },
+    "continue.enableTabAutocomplete": true,
+    "yaml.schemas": {
+        "file:///home/francisco.santos/.vscode/extensions/continue.continue-1.2.22-linux-x64/config-yaml-schema.json": [
+            ".continue/**/*.yaml"
+        ],
+        "file:///home/francisco.santos/.vscode/extensions/continue.continue-2.0.0-linux-x64/config-yaml-schema.json": [
+            ".continue/**/*.yaml"
+        ]
+    }
+}

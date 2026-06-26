@@ -1,6 +1,6 @@
 ;;; $DOOMDIR/config.el -*- lexical-binding: t; -*-
 
-(setq doom-font (font-spec :family "FiraCode Nerd Font" :size 16 :weight 'semi-light))
+(setq doom-font (font-spec :family "Fira Code" :size 18 :weight 'semi-light))
 
 (setq doom-theme 'catppuccin)
 (setq catppuccin-flavor 'latte)
@@ -15,52 +15,49 @@
 
 (setq-default cursor-type 'bar)
 
-(setq lsp-idle-delay 0.5) ; 500ms
-
 (use-package auto-dark
-  :ensure t
   :config
   (setq custom-safe-themes t)
-  (ignore-errors
-    (setq auto-dark-themes '((catppuccin) (catppuccin)))
-
-    (add-hook 'auto-dark-dark-mode-hook
-              (lambda ()
+  (setq auto-dark-themes '((catppuccin) (catppuccin)))
+  (add-hook 'auto-dark-dark-mode-hook
+            (lambda ()
+              (unless (eq catppuccin-flavor 'mocha)
                 (setq catppuccin-flavor 'mocha)
-                (catppuccin-reload)))
-
-    (add-hook 'auto-dark-light-mode-hook
-              (lambda ()
+                (catppuccin-reload))))
+  (add-hook 'auto-dark-light-mode-hook
+            (lambda ()
+              (unless (eq catppuccin-flavor 'latte)
                 (setq catppuccin-flavor 'latte)
-                (catppuccin-reload)))
+                (catppuccin-reload))))
+  (auto-dark-mode 1))
 
-    (auto-dark-mode 1)))
+;; Python: use ruff as LSP server (linting + formatting) and ty for type checking
+(defun my/find-ruff ()
+  "Return project-local ruff if present, else fall back to system ruff."
+  (when-let* ((root (and (project-current) (project-root (project-current))))
+              (local (cl-find-if #'file-executable-p
+                                 (mapcar (lambda (p) (expand-file-name p root))
+                                         '(".venv/bin/ruff" "venv/bin/ruff")))))
+    local))
 
-;; accept completion from copilot and fallback to company
-(use-package! copilot
-  :hook (prog-mode . copilot-mode)
-  :bind (:map copilot-completion-map
-              ("C-f" . 'copilot-accept-completion)
-              ("TAB" . 'copilot-accept-completion)
-              ("C-TAB" . 'copilot-accept-completion-by-word)
-              ("C-<tab>" . 'copilot-accept-completion-by-word)))
+(after! eglot
+  (add-to-list 'eglot-server-programs
+               `((python-mode python-ts-mode)
+                 . ,(lambda (&rest _)
+                      (list (or (my/find-ruff) "ruff") "server" "--preview")))))
 
-
-
-(use-package! gptel
- :config
- (setq gptel-model 'gtp-4o
-       gptel-backend (gptel-make-gh-copilot "Copilot"))
- (gptel-make-preset 'programming
-   :description "Help with programming tasks"
-   :backend (gptel-make-gh-copilot "Copilot")
-   :model 'gpt-4o
-   :system "You are an expert coding assistant. Your role is to provide high-quality code solutions, refactorings, and explanations."
- ))
+;; Use ruff for formatting Python buffers via apheleia
+(after! apheleia
+  (setf (alist-get 'python-mode apheleia-mode-alist) 'ruff)
+  (setf (alist-get 'python-ts-mode apheleia-mode-alist) 'ruff))
 
 
-(use-package! ob-mermaid
-  :after org
-  :config
-  (setq ob-mermaid-cli-path "mmdc")
-  (add-to-list 'org-babel-load-languages '(mermaid . t)))
+(after! org-tree-slide
+  ;; Show #+TITLE / #+AUTHOR as a persistent header on every slide
+  (setq org-tree-slide-header t)
+  ;; Don't skip any outline levels — all * headings are slides
+  (setq org-tree-slide-skip-outline-level 0)
+  (setq +org-present-text-scale 3)
+  ;; Skip COMMENT-tagged and DONE headings
+  (setq org-tree-slide-skip-comments t)
+  (setq org-tree-slide-skip-done t))

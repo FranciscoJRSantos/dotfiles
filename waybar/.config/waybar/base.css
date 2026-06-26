@@ -1,0 +1,112 @@
+/* Shared Waybar styles across themes */
+
+* {
+  font-family: "FiraCode Nerd Font";
+  font-size: 20px;
+  min-height: 0;
+}
+
+#waybar {
+  color: @text;
+  background-color: transparent;
+}
+
+/* Active and inactive states */
+#network.wifi { color: @text; }
+#network.disabled,
+#network.disconnected,
+#bluetooth.disabled,
+#bluetooth.off { color: alpha(@subtext0, 0.7); }
+
+/* Common card styling for grouped widgets */
+#workspaces,
+#battery,
+#custom-notification,
+#sys-info,
+box.modules-right > box.horizontal {
+  background-color: @base;
+  border-radius: 0.5rem;
+  border: @pink solid 2px;
+  margin: 0rem 0.5rem 0.5rem;
+  padding: 0.5rem 1rem;
+}
+
+/* Workspaces */
+#workspaces,
+#workspaces button { all: unset; }
+
+#workspaces {
+  background-color: @base;
+  margin: 0rem 0.5rem 0.5rem;
+  border: @pink solid 2px;
+  border-radius: 0.5rem;
+}
+
+#workspaces > button {
+  padding: 0px 1rem;
+  font-weight: 900;
+  border-radius: 0px;
+}
+
+#workspaces > button.empty { color: @overlay0; }
+#workspaces > button.visible { color: @overlay0; }
+
+#workspaces > button.active {
+  color: @blue;
+  background: alpha(@blue, 0.1);
+}
+
+#workspaces > button:hover {
+  background: alpha(@blue, 0.2);
+  color: @text;
+}
+
+#workspaces > button:first-child {
+  border-radius: 0.5rem;
+  padding-left: 2rem;
+}
+
+#workspaces > button:last-child {
+  border-radius: 0.5rem;
+  padding-right: 2rem;
+}
+
+/* Tray */
+#tray {
+  background-color: @base;
+  border-radius: 0.5rem;
+  border: @pink solid 2px;
+  margin: 0rem 0.5rem 0.5rem;
+  padding: 0.5rem 1rem;
+}
+
+#tray .active image {
+  margin: 0px;
+  padding: 0px 0.5rem;
+}
+
+/* Compact spacing for inline modules */
+#network,
+#bluetooth,
+#temperature,
+#idle_inhibitor,
+#custom-dnd { margin-right: 0.5rem; margin-left: 0.5rem; }
+
+/* Clock */
+#clock {
+  background-color: @base;
+  border: @pink solid 2px;
+  margin: 0rem 0.5rem 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  font-weight: normal;
+}
+
+/* Optional edge spacing for first/last groups */
+.modules-right:last-child { margin-right: 0.15rem; }
+.modules-left:first-child { margin-left: 0.15rem; }
+
+/* Tooltips */
+tooltip { border-radius: 1.5rem; background: @base; }
+tooltip > box { padding: 1.5rem; }
+tooltip label { color: @text; }

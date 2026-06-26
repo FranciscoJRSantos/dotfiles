@@ -2,6 +2,7 @@
 	name = Francisco Santos
 	email = franciscojrsantos1997@gmail.com
 	username = FranciscoJRSantos
+	signingkey = ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDXX+utM8d3LSGozsyeYxATzaOLLQpMJvGtnlbEJppS7
 [core]
 	editor = nvim
 [init]
@@ -18,11 +19,20 @@
 	process = git-lfs filter-process
 	required = true
 
+# [gpg]
+#   format = ssh
+# 
+# [gpg "ssh"]
+#   program = "/opt/1Password/op-ssh-sign"
+# 
+# [commit]
+#   gpgsign = true
+
+[includeIf "gitdir:~/Documents/projects/**"]
+  path = ~/Documents/projects/.gitconfig
+
 [includeIf "gitdir:~/Documents/projects/AIH/**"]
   path = ~/Documents/projects/AIH/.gitconfig
 
-[includeIf "gitdir:~/Documents/projects/"]
-  path = ~/Documents/projects/.gitconfig
-
-[includeIf "gitdir:~/Documents/personal-projects/"]
+[includeIf "gitdir:~/Documents/personal-projects/**"]
   path = ~/Documents/personal-projects/.gitconfig

@@ -15,7 +15,6 @@
 ;;      directory (for easy access to its source code).
 
 (setq native-comp-always-compile t)
-(setq native-comp-jit-compilation nil)
 (setq package-native-compile t)
 (after! (doom-packages straight)
   (setq straight--native-comp-available t))
@@ -43,7 +42,7 @@
        (emoji +unicode)    ; 🙂
        hl-todo             ; highlight TODO/FIXME/NOTE/DEPRECATED/HACK/REVIEW
        indent-guides       ; highlighted indent columns
-       ;;ligatures         ; ligatures and symbols to make your code pretty again
+       ligatures           ; ligatures and symbols to make your code pretty again
        ;;minimap           ; show a map of the code on the side
        (modeline +light)   ; snazzy, Atom-inspired modeline, plus API
        nav-flash         ; blink cursor line after big motions
@@ -56,9 +55,9 @@
        ;;unicode           ; extended unicode support for various languages
        (vc-gutter +pretty) ; vcs diff in the fringe
        vi-tilde-fringe   ; fringe tildes to mark beyond EOB
-       ;;window-select     ; visually switch windows
+       window-select       ; visually switch windows
        workspaces        ; tab emulation, persistence & separate workspaces
-       ;;zen               ; distraction-free coding or writing
+       zen               ; distraction-free coding or writing
 
        :editor
        (evil +everywhere)  ; come to the dark side, we have cookies
@@ -86,7 +85,7 @@
        ;;eshell            ; the elisp shell that works everywhere
        ;;shell             ; simple shell REPL for Emacs
        ;;term              ; basic terminal emulator for Emacs
-       ;;vterm             ; the best terminal emulation in Emacs
+       vterm             ; the best terminal emulation in Emacs
 
        :checkers
        (syntax +icons +childframe) ; tasing you for every semicolon you forget
@@ -100,12 +99,12 @@
        ;;debugger          ; FIXME stepping through code, to help you add bugs
        direnv
        docker
-       editorconfig       ; let someone else argue about tabs vs spaces
-       ein               ; tame Jupyter notebooks with emacs
+       editorconfig        ; let someone else argue about tabs vs spaces
+       ein                 ; tame Jupyter notebooks with emacs
        (eval +overlay)     ; run code, run (also, repls)
        lookup              ; navigate your code and its documentation
        ;;llm               ; when I said you needed friends, I didn't mean...
-       (lsp +peek)         ; M-x vscode
+       eglot               ; M-x vscode (but less bloated)
        magit               ; a git porcelain for Emacs
        ;;make              ; run make tasks from Emacs
        ;;pass              ; password manager for nerds
@@ -122,17 +121,17 @@
        :lang
        (csharp +dotnet +lsp +tree-sitter) ; unity, .NET, and mono shenanigans
        (go +tree-sitter +lsp)             ; the hipster dialect
-       (json +tree-sitter)                ; At least it ain't XML
-       (javascript +tree-sitter)          ; all(hope(abandon(ye(who(enter(here))))))
-       (org +journal)                     ; organize your plain life in plain text
-       (python +tree-sitter)              ; beautiful is better than ugly
-       (ruby +rails +tree-sitter)         ; 1.step {|i| p "Ruby is #{i.even? ? 'love' : 'life'}"}
-       (rust +tree-sitter)                ; Fe2O3.unwrap().unwrap().unwrap().unwrap()
+       (json +lsp +tree-sitter)           ; At least it ain't XML
+       (javascript +lsp +tree-sitter)     ; all(hope(abandon(ye(who(enter(here))))))
+       (org +journal +present)            ; organize your plain life in plain text
+       (python +tree-sitter +lsp)         ; beautiful is better than ugly
+       (ruby +rails +lsp +tree-sitter)    ; 1.step {|i| p "Ruby is #{i.even? ? 'love' : 'life'}"}
+       (rust +lsp +tree-sitter)           ; Fe2O3.unwrap().unwrap().unwrap().unwrap()
        (rest +jq)                         ; Emacs as a REST client
        (sh +fish +tree-sitter)            ; she sells {ba,z,fi}sh shells on the C xor
-       (web +tree-sitter)                 ; the tubes
-       (yaml +tree-sitter)                ; JSON, but readable
-       (php +tree-sitter)                 ; perl's insecure younger brother
+       (web +lsp +tree-sitter)            ; the tubes
+       (yaml +lsp +tree-sitter)           ; JSON, but readable
+       (php +lsp +tree-sitter)            ; perl's insecure younger brother
        emacs-lisp                         ; drown in parentheses
        markdown                           ; writing docs for people to ignore
        ;;nim               ; python + lisp at the speed of c
@@ -154,7 +153,7 @@
        ;;common-lisp       ; if you've seen one lisp, you've seen them all
        ;;coq               ; proofs-as-programs
        ;;crystal           ; ruby at the speed of c
-       ;;data              ; config/data formats
+       data                ; config/data formats
        ;;(dart +flutter)   ; paint ui and not much else
        ;;dhall
        ;;elixir            ; erlang done right

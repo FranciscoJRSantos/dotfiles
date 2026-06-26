@@ -1,0 +1,11 @@
+models:
+  - name: Ollama Qwen FIM
+    provider: ollama
+    model: qwen2.5-coder:1.5b
+    roles:
+      - autocomplete
+
+tabAutocompleteOptions:
+  debounceDelay: 500
+  maxPromptTokens: 512
+  disable: false

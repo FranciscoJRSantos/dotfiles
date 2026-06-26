@@ -13,7 +13,7 @@
      "113a135eb7a2ace6d9801469324f9f7624f8c696b72e3709feb7368b06ddaccc"
      "691d671429fa6c6d73098fc6ff05d4a14a323ea0a18787daeb93fde0e48ab18b"
      "7964b513f8a2bb14803e717e0ac0123f100fb92160dcf4a467f530868ebaae3e" default))
- '(elfeed-feeds '("https://37signals.com/feed/jobs.xml")))
+ )
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

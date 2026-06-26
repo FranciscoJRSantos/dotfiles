@@ -5,6 +5,6 @@
 
   "include": ["~/.config/waybar/modules.json"],
   "modules-left": ["hyprland/workspaces","tray"],
-  "modules-center": ["clock"],
-  "modules-right": ["group/sys-info","battery"]
+  "modules-center": [],
+  "modules-right": ["group/sys-info", "clock","battery"]
 }
