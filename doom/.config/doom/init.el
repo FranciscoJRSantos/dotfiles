@@ -21,76 +21,78 @@
 
 
 (doom! :input
-       ;;bidi              ; (tfel ot) thgir etirw uoy gnipleh
+       ;;bidi                           ; (tfel ot) thgir etirw uoy gnipleh
        ;;chinese
        ;;japanese
-       ;;layout            ; auie,ctsrnm is the superior home row
+       ;;layout                         ; auie,ctsrnm is the superior home row
 
        :completion
-       ;;company           ; the ultimate code completion backend
-       ;;helm              ; the *other* search engine for love and life
-       ;;ido               ; the other *other* search engine...
-       ;;ivy               ; a search engine for love and life
-       (corfu +orderless)  ; complete with cap(f), cape and a flying feather!
-       (vertico +icons +childframe) ; the search engine of the future
+       (corfu +orderless +icons)        ; complete with cap(f), cape and a flying feather!
+       (vertico +icons +childframe)     ; the search engine of the future
+       ;;company                        ; the ultimate code completion backend
+       ;;helm                           ; the *other* search engine for love and life
+       ;;ido                            ; the other *other* search engine...
+       ;;ivy                            ; a search engine for love and life
 
        :ui
-       ;;deft              ; notational velocity for Emacs
-       doom                ; what makes DOOM look the way it does
-       doom-dashboard      ; a nifty splash screen for Emacs
-       ;;doom-quit         ; DOOM quit-message prompts when you quit Emacs
-       (emoji +unicode)    ; 🙂
-       hl-todo             ; highlight TODO/FIXME/NOTE/DEPRECATED/HACK/REVIEW
-       indent-guides       ; highlighted indent columns
-       ligatures           ; ligatures and symbols to make your code pretty again
-       ;;minimap           ; show a map of the code on the side
-       (modeline +light)   ; snazzy, Atom-inspired modeline, plus API
-       nav-flash         ; blink cursor line after big motions
-       ;;neotree           ; a project drawer, like NERDTree for vim
-       ophints           ; highlight the region an operation acts on
-       (popup +defaults)   ; tame sudden yet inevitable temporary windows
-       (smooth-scroll)     ; So smooth you won't believe it's not butter
-       ;;tabs              ; a tab bar for Emacs
-       ;;treemacs          ; a project drawer, like neotree but cooler
-       ;;unicode           ; extended unicode support for various languages
-       (vc-gutter +pretty) ; vcs diff in the fringe
-       vi-tilde-fringe   ; fringe tildes to mark beyond EOB
-       window-select       ; visually switch windows
-       workspaces        ; tab emulation, persistence & separate workspaces
-       zen               ; distraction-free coding or writing
+       doom                             ; what makes DOOM look the way it does
+       dashboard                        ; a nifty splash screen for Emacs
+       (emoji +unicode)                 ; 🙂
+       hl-todo                          ; highlight TODO/FIXME/NOTE/DEPRECATED/HACK/REVIEW
+       indent-guides                    ; highlighted indent columns
+       ligatures                        ; ligatures and symbols to make your code pretty again
+       (modeline +light)                ; snazzy, Atom-inspired modeline, plus API
+       nav-flash                        ; blink cursor line after big motions
+       ophints                          ; highlight the region an operation acts on
+       (popup +defaults)                ; tame sudden yet inevitable temporary windows
+       (smooth-scroll +interpolate)     ; So smooth you won't believe it's not butter
+       (vc-gutter +pretty)              ; vcs diff in the fringe
+       vi-tilde-fringe                  ; fringe tildes to mark beyond EOB
+       window-select                    ; visually switch windows
+       workspaces                       ; tab emulation, persistence & separate workspaces
+       zen                              ; distraction-free coding or writing
+       ;;deft                           ; notational velocity for Emacs
+       ;;doom-quit                      ; DOOM quit-message prompts when you quit Emacs
+       ;;minimap                        ; show a map of the code on the side
+       ;;neotree                        ; a project drawer, like NERDTree for vim
+       ;;tabs                           ; a tab bar for Emacs
+       ;;treemacs                       ; a project drawer, like neotree but cooler
+       ;;unicode                        ; extended unicode support for various languages
 
        :editor
-       (evil +everywhere)  ; come to the dark side, we have cookies
-       file-templates      ; auto-snippets for empty files
-       fold                ; (nigh) universal code folding
-       format              ; automated prettiness
-       snippets            ; my elves. They type so I don't have to
-       ;;god               ; run Emacs commands without modifier keys
-       ;;lispy             ; vim for lisp, for people who don't like vim
-       ;;multiple-cursors  ; editing in many places at once
-       ;;objed             ; text object editing for the innocent
-       ;;parinfer          ; turn lisp into python, sort of
-       ;;rotate-text       ; cycle region at point between text candidates
-       ;;word-wrap         ; soft wrapping with language-aware indent
+       (evil +everywhere)               ; come to the dark side, we have cookies
+       file-templates                   ; auto-snippets for empty files
+       fold                             ; (nigh) universal code folding
+       format                           ; automated prettiness
+       snippets                         ; my elves. They type so I don't have to
+       ;;god                            ; run Emacs commands without modifier keys
+       ;;lispy                          ; vim for lisp, for people who don't like vim
+       ;;multiple-cursors               ; editing in many places at once
+       ;;objed                          ; text object editing for the innocent
+       ;;parinfer                       ; turn lisp into python, sort of
+       ;;rotate-text                    ; cycle region at point between text candidates
+       ;;word-wrap                      ; soft wrapping with language-aware indent
 
        :emacs
-       (dired +icons)    ; making dired pretty [functional]
-       electric          ; smarter, keyword-based electric-indent
-       ;;eww             ; the internet is gross
-       (ibuffer +icons)           ; interactive buffer management
-       (undo +tree)      ; persistent, smarter undo for your inevitable mistakes
-       vc                ; version-control and Emacs, sitting in a tree
+       (dired +icons)                   ; making dired pretty [functional]
+       electric                         ; smarter, keyword-based electric-indent
+       (ibuffer +icons)                 ; interactive buffer management
+       (undo +tree)                     ; persistent, smarter undo for your inevitable mistakes
+       vc                               ; version-control and Emacs, sitting in a tree
+       ;;eww                            ; the internet is gross
+       ;;tramp
 
        :term
-       ;;eshell            ; the elisp shell that works everywhere
-       ;;shell             ; simple shell REPL for Emacs
-       ;;term              ; basic terminal emulator for Emacs
-       vterm             ; the best terminal emulation in Emacs
+       ;;eshell                         ; the elisp shell that works everywhere
+       ;;shell                          ; simple shell REPL for Emacs
+       ;;term                           ; basic terminal emulator for Emacs
+       ;;vterm                          ; the best terminal emulation in Emacs
+       (ghostel +everywhere)            ; the best terminal emulation in Emacs
 
        :checkers
-       (syntax +icons +childframe) ; tasing you for every semicolon you forget
-       ;;(spell +flyspell) ; tasing you for misspelling mispelling
-       ;;grammar           ; tasing grammar mistake every you make
+       (syntax +icons +childframe)      ; tasing you for every semicolon you forget
+       ;;(spell +flyspell)              ; tasing you for misspelling mispelling
+       ;;grammar                        ; tasing grammar mistake every you make
 
        :tools
        ;;ansible
@@ -109,7 +111,7 @@
        ;;make              ; run make tasks from Emacs
        ;;pass              ; password manager for nerds
        ;;pdf               ; pdf enhancements
-       ;;terraform         ; infrastructure as code
+       terraform         ; infrastructure as code
        ;;tmux              ; an API for interacting with tmux
        tree-sitter       ; syntax and parsing, sitting in a tree...
        ;;upload            ; map local to remote projects via ssh/ftp
