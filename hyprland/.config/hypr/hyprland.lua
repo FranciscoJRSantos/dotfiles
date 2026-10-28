@@ -14,15 +14,20 @@ local function apply_monitor_profile()
     end
 
     if names["HDMI-A-1"] then
+        -- Home: single 4K OLED, laptop panel off regardless of lid state
         hl.monitor({ output = "HDMI-A-1", mode = "3840x2160@120", position = "0x0", scale = "1" })
-        hl.monitor({ output = "eDP-1", mode = "1920x1200@60", position = "-1920x0", scale = "1" })
+        hl.monitor({ output = "eDP-1", disabled = true })
     elseif names["DP-1"] then
+        -- Office: dual monitor, laptop on the right
         hl.monitor({ output = "DP-1", mode = "2560x1440@60", position = "0x0", scale = "1" })
-        hl.monitor({ output = "eDP-1", mode = "1920x1200@60", position = "-1920x0", scale = "1" })
+        hl.monitor({ output = "eDP-1", mode = "1920x1200@60", position = "2560x0", scale = "1" })
     else
+        -- Mobile: laptop only
         hl.monitor({ output = "eDP-1", mode = "1920x1200@60", position = "0x0", scale = "1" })
     end
 end
+
+apply_monitor_profile() -- re-apply on config reload, not just on hotplug/start
 
 hl.on("monitor.added", function() apply_monitor_profile() end)
 hl.on("monitor.removed", function() apply_monitor_profile() end)
@@ -36,7 +41,7 @@ local file_manager = "thunar"
 local tui_file_manager = "yazi"
 local editor = "emacsclient -nc"
 local browser = "chromium-browser"
-local ipc = "qs -c noctalia-shell ipc call"
+local ipc = "noctalia msg "
 
 -------------------
 ---- AUTOSTART ----
@@ -45,17 +50,16 @@ local ipc = "qs -c noctalia-shell ipc call"
 hl.on("hyprland.start", function()
     apply_monitor_profile()
     hl.exec_cmd("systemctl --user start hyprland-session.target")
-    hl.exec_cmd("qs -c noctalia-shell --no-duplicate")
+    hl.exec_cmd("noctalia")
     hl.exec_cmd("nm-applet --indicator")
     hl.exec_cmd("blueman-applet")
-    hl.exec_cmd("hypridle")
     hl.exec_cmd("emacs --daemon")
 
     hl.exec_cmd("flatpak run com.slack.Slack", { workspace = "1 silent" })
     hl.exec_cmd(browser, { workspace = "2 silent" })
     hl.exec_cmd(editor, { workspace = "3 silent" })
     hl.exec_cmd(terminal, { workspace = "3 silent" })
-    hl.exec_cmd("flatpak run app.zen_browser.zen", { workspace = "0 silent" })
+    hl.exec_cmd("flatpak run app.zen_browser.zen", { workspace = "10 silent" })
 
     hl.exec_cmd("dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP")
 end)
@@ -73,7 +77,6 @@ hl.env("HYPRCURSOR_SIZE", "24")
 hl.env("XDG_CURRENT_DESKTOP", "Hyprland")
 hl.env("XDG_SESSION_TYPE", "wayland")
 hl.env("XDG_SESSION_DESKTOP", "Hyprland")
-hl.env("NOCTALIA_PAM_SERVICE", "password-auth")
 
 -----------------------
 ---- LOOK AND FEEL ----
@@ -88,10 +91,6 @@ hl.config({
         gaps_in = 5,
         gaps_out = 10,
         border_size = 2,
-        col = {
-            active_border = { colors = { mocha.pink, mocha.sky }, angle = 90 },
-            inactive_border = "rgba(595959aa)",
-        },
         resize_on_border = false,
         allow_tearing = false,
         layout = "master",
@@ -122,17 +121,11 @@ hl.config({
         enabled = true,
     },
 
-    dwindle = {
-        preserve_split = true,
-    },
-
     master = {
         new_status = "master",
     },
 
     misc = {
-        force_default_wallpaper = -1,
-        disable_hyprland_logo = false,
         enable_anr_dialog = false,
     },
 
@@ -187,25 +180,11 @@ hl.animation({ leaf = "workspacesOut", enabled = true, speed = 1.94, bezier = "a
 
 hl.device({
     name = "ergo-k860-keyboard",
-    kb_layout = "us",
-    kb_variant = "",
-    kb_model = "",
     kb_options = "caps:swapescape, altwin:swap_alt_win",
 })
 
 hl.device({
-    name = "ultimate-gadget-laboratories-uhk-60-v2",
-    kb_layout = "us",
-    kb_variant = "",
-    kb_model = "",
-    kb_options = "",
-})
-
-hl.device({
     name = "at-translated-set-2-keyboard",
-    kb_layout = "us",
-    kb_variant = "",
-    kb_model = "",
     kb_options = "caps:swapescape",
 })
 
@@ -215,8 +194,8 @@ hl.device({
 
 local mainMod = "SUPER"
 
-hl.bind(mainMod .. " + D", hl.dsp.exec_cmd(ipc .. " launcher toggle"))
-hl.bind(mainMod .. " + comma", hl.dsp.exec_cmd(ipc .. " settings toggle"))
+hl.bind(mainMod .. " + D", hl.dsp.exec_cmd(ipc .. "panel-toggle launcher"))
+hl.bind(mainMod .. " + comma", hl.dsp.exec_cmd(ipc .. "settings-toggle"))
 hl.bind(mainMod .. " + B", hl.dsp.exec_cmd(browser))
 hl.bind(mainMod .. " + T", hl.dsp.exec_cmd(terminal))
 hl.bind(mainMod .. " + E", hl.dsp.exec_cmd(file_manager))
@@ -224,15 +203,16 @@ hl.bind(mainMod .. " + SHIFT + E", hl.dsp.exec_cmd(terminal .. " -e " .. tui_fil
 hl.bind(mainMod .. " + SHIFT + T", hl.dsp.exec_cmd(editor))
 
 hl.bind("PRINT", hl.dsp.exec_cmd("hyprshot -m region --clipboard-only"))
-hl.bind(mainMod .. " + V", hl.dsp.exec_cmd(ipc .. " launcher clipboard"))
+hl.bind(mainMod .. " + V", hl.dsp.exec_cmd(ipc .. "panel-toggle clipboard"))
 
 hl.bind(mainMod .. " + Q", hl.dsp.window.close())
-hl.bind(mainMod .. " + M", hl.dsp.exit())
+hl.bind(mainMod .. " + SHIFT + M", hl.dsp.exit())
 hl.bind(mainMod .. " + SHIFT + F", hl.dsp.window.float({ action = "toggle" }))
 hl.bind(mainMod .. " + F", hl.dsp.window.fullscreen(1))
 hl.bind(mainMod .. " + P", hl.dsp.window.pseudo())
 hl.bind(mainMod .. " + G", hl.dsp.group.toggle())
 hl.bind(mainMod .. " + SHIFT + G", hl.dsp.group.next())
+hl.bind(mainMod .. " + CTRL + L", hl.dsp.exec_cmd([[bash -c 'W=$(hyprctl -j activeworkspace | jq -r .id); L=$(hyprctl -j activeworkspace | jq -r .tiledLayout); if [ "$L" = monocle ]; then N=master; else N=monocle; fi; hyprctl eval "hl.workspace_rule({ workspace = \"$W\", layout = \"$N\" })" && notify-send -t 1500 "Layout" "Workspace $W → $N"']]))
 
 -- Move active workspace to a specific monitor
 hl.bind(mainMod .. " + CTRL + 0", hl.dsp.workspace.move({ monitor = 0 }))
@@ -274,34 +254,35 @@ hl.bind(mainMod .. " + mouse:272", hl.dsp.window.drag(),   { mouse = true })
 hl.bind(mainMod .. " + mouse:273", hl.dsp.window.resize(), { mouse = true })
 
 -- Volume / brightness
-hl.bind("XF86AudioRaiseVolume", hl.dsp.exec_cmd(ipc .. " volume increase"), { locked = true, repeating = true })
-hl.bind("XF86AudioLowerVolume", hl.dsp.exec_cmd(ipc .. " volume decrease"), { locked = true, repeating = true })
-hl.bind("XF86AudioMute", hl.dsp.exec_cmd(ipc .. " volume muteOutput"), { locked = true })
-hl.bind("XF86MonBrightnessUp", hl.dsp.exec_cmd(ipc .. " brightness increase"), { locked = true, repeating = true })
-hl.bind("XF86MonBrightnessDown", hl.dsp.exec_cmd(ipc .. " brightness decrease"), { locked = true, repeating = true })
+hl.bind("XF86AudioRaiseVolume", hl.dsp.exec_cmd(ipc .. "volume-up"), { locked = true, repeating = true })
+hl.bind("XF86AudioLowerVolume", hl.dsp.exec_cmd(ipc .. "volume-down"), { locked = true, repeating = true })
+hl.bind("XF86AudioMute", hl.dsp.exec_cmd(ipc .. "volume-mute"), { locked = true })
+hl.bind("XF86MonBrightnessUp", hl.dsp.exec_cmd(ipc .. "brightness-up"), { locked = true, repeating = true })
+hl.bind("XF86MonBrightnessDown", hl.dsp.exec_cmd(ipc .. "brightness-down"), { locked = true, repeating = true })
 
 -- Media keys
-hl.bind("XF86AudioPlay", hl.dsp.exec_cmd(ipc .. " media playPlause"), { locked = true })
-hl.bind("XF86AudioPrev", hl.dsp.exec_cmd(ipc .. " media previous"), { locked = true })
-hl.bind("XF86AudioNext", hl.dsp.exec_cmd(ipc .. " media next"), { locked = true })
+hl.bind("XF86AudioPlay", hl.dsp.exec_cmd(ipc .. "media play-pause"), { locked = true })
+hl.bind("XF86AudioPrev", hl.dsp.exec_cmd(ipc .. "media previous"), { locked = true })
+hl.bind("XF86AudioNext", hl.dsp.exec_cmd(ipc .. "media next"), { locked = true })
 
 -- Mute mic
-hl.bind("XF86AudioMicMute", hl.dsp.exec_cmd(ipc .. " volume muteInput"))
+hl.bind("XF86AudioMicMute", hl.dsp.exec_cmd(ipc .. "mic-mute"))
+hl.bind("F13", hl.dsp.exec_cmd(ipc .. "mic-mute"), { locked = true })
 
 -- Lock screen
-hl.bind(mainMod .. " + CTRL + Q", hl.dsp.exec_cmd(ipc .. " lockScreen lock"))
+hl.bind(mainMod .. " + CTRL + Q", hl.dsp.exec_cmd(ipc .. "session lock"))
 
--- Lid switch
-hl.bind("switch:on:Lid Switch", hl.dsp.exec_cmd("hyprctl dispatch dpms off && qs -c noctalia-shell ipc call lockScreen lock && systemctl suspend"), { locked = true })
-hl.bind("switch:off:Lid Switch", hl.dsp.exec_cmd("hyprctl dispatch dpms on && brightnessctl -r"), { locked = true })
+-- Lid switch: docked = no-op, undocked = lock and suspend (see scripts/lid-policy.sh)
+hl.bind("switch:on:Lid Switch", hl.dsp.exec_cmd(os.getenv("HOME") .. "/.config/hypr/scripts/lid-policy.sh on"), { locked = true })
 
 --------------------------------
 ---- WINDOWS AND WORKSPACES ----
 --------------------------------
 
-hl.workspace_rule({ workspace = "2", layout = "scrolling" })
+hl.workspace_rule({ workspace = "2", layout = "monocle" })
 hl.workspace_rule({ workspace = "3", layout = "monocle" })
 hl.workspace_rule({ workspace = "4", layout = "monocle" })
+hl.workspace_rule({ workspace = "10", layout = "monocle" })
 
 hl.window_rule({
     name = "Float Bluetooth Manager",
