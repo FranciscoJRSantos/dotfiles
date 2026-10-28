@@ -4,7 +4,3 @@
 (package! catppuccin-theme)
 
 (package! auto-dark)
-
-;; (package! minuet)
-
-
