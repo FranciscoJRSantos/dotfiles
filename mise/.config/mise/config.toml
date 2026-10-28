@@ -1,10 +1,7 @@
 [tools]
-bun = "latest"
-go = "latest"
-node = "lts"
-python = "latest"
-ruby = "3.4.4"
-rust = "stable"
+node = "24"
+python = "3.14"
+rust = "1.93"
 usage = "latest"
 
 [settings]
