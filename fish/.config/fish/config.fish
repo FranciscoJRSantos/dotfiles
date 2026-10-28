@@ -1,5 +1,5 @@
 if status is-interactive
-    set PATH $HOME/.local/bin:$HOME/bin:$HOME/Documents/personal-projects/meta-agent-shell/bin:$PATH
+    set PATH $HOME/.local/bin:$HOME/bin:$PATH
 
     set -Ux EMACS_USE_XDG 1
     set -gx EDITOR nvim
@@ -16,4 +16,3 @@ if status is-interactive
     eval $(zoxide init fish --cmd cd | source)
     direnv hook fish | source
 end
-
