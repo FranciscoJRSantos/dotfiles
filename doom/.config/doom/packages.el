@@ -5,14 +5,14 @@
 
 (package! auto-dark)
 
-(package! copilot
-  :recipe (:host github :repo "copilot-emacs/copilot.el" :files ("*.el")))
-
-(package! eca-emacs
-  :recipe (:host github :repo "editor-code-assistant/eca-emacs"))
-
-(package! eca
-  :recipe (:host github :repo "editor-code-assistant/eca-emacs" :files ("*.el")))
+; (package! copilot
+;   :recipe (:host github :repo "copilot-emacs/copilot.el" :files ("*.el")))
+; 
+; (package! eca-emacs
+;   :recipe (:host github :repo "editor-code-assistant/eca-emacs"))
+; 
+; (package! eca
+;   :recipe (:host github :repo "editor-code-assistant/eca-emacs" :files ("*.el")))
 
 ;; (package! minuet)
 
