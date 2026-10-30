@@ -1,0 +1,9 @@
+/.agent-shell/
+
+# fish universal variables are machine-local mutable state, not portable config
+fish/.config/fish/fish_variables
+
+# Fisher-managed plugin files and generated completions; fish_plugins is the manifest
+fish/.config/fish/functions/
+fish/.config/fish/conf.d/
+fish/.config/fish/completions/
