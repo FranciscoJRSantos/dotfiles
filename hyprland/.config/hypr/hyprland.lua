@@ -6,6 +6,14 @@ local mocha = require("mocha")
 
 hl.monitor({ output = "", mode = "preferred", position = "auto", scale = "1" })
 
+-- Both desks use a single external monitor with the laptop panel off; only the
+-- mobile profile brings eDP-1 back. The home/office profiles disable it, so the
+-- re-enable must pass disabled = false explicitly: a rule that only sets
+-- mode/position is treated as identical to the active one and is never applied.
+local function laptop_on(position)
+    hl.monitor({ output = "eDP-1", mode = "1920x1200@60", position = position, scale = "1", disabled = false })
+end
+
 local function apply_monitor_profile()
     local monitors = hl.get_monitors()
     local names = {}
@@ -18,12 +26,12 @@ local function apply_monitor_profile()
         hl.monitor({ output = "HDMI-A-1", mode = "3840x2160@120", position = "0x0", scale = "1" })
         hl.monitor({ output = "eDP-1", disabled = true })
     elseif names["DP-1"] then
-        -- Office: dual monitor, laptop on the right
+        -- Office: single 1440p, laptop panel off
         hl.monitor({ output = "DP-1", mode = "2560x1440@60", position = "0x0", scale = "1" })
-        hl.monitor({ output = "eDP-1", mode = "1920x1200@60", position = "2560x0", scale = "1" })
+        hl.monitor({ output = "eDP-1", disabled = true })
     else
         -- Mobile: laptop only
-        hl.monitor({ output = "eDP-1", mode = "1920x1200@60", position = "0x0", scale = "1" })
+        laptop_on("0x0")
     end
 end
 
