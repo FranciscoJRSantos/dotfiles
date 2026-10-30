@@ -1,5 +1,5 @@
 if status is-interactive
-    set PATH $HOME/.local/bin:$HOME/bin:$PATH
+    set PATH $HOME/.local/bin:$HOME/bin:$HOME/.opencode/bin:$PATH
 
     set -Ux EMACS_USE_XDG 1
     set -gx EDITOR nvim
