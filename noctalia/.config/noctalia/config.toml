@@ -1,0 +1,60 @@
+# Portable Noctalia baseline, seeded from `noctalia config export`.
+# Machine-specific tables are left out on purpose: lockscreen_widgets (per-monitor pixel layout),
+# wallpaper (daily-wallpaper path changes every day) and location. The Settings UI writes
+# ~/.local/state/noctalia/settings.toml, which overrides this file; re-export to refresh.
+
+[bar.default]
+background_opacity = 0.93000000000000005
+capsule = true
+center = [ "audio_visualizer", "media" ]
+concave_edge_corners = false
+end = [ "clock", "tray", "network", "caffeine", "notifications", "battery", "session" ]
+margin_edge = 4
+margin_ends = 4
+margin_opposite_edge = 4
+position = "bottom"
+scale = 1.1500000096857548
+start = [ "launcher", "cpu", "temp", "ram", "workspaces" ]
+thickness = 50
+
+[hooks]
+theme_mode_changed = "darkman set $NOCTALIA_THEME_MODE"
+
+[idle]
+behavior_order = [ "lock", "screen-off", "lock-and-suspend" ]
+
+    [idle.behavior.lock]
+    action = "lock"
+    enabled = true
+    timeout = 600.0
+
+    [idle.behavior.lock-and-suspend]
+    action = "lock_and_suspend"
+    enabled = false
+    timeout = 900.0
+
+    [idle.behavior.screen-off]
+    action = "screen_off"
+    enabled = true
+    timeout = 630.0
+
+[plugins]
+enabled = [ "nzlov/daily-wallpaper" ]
+
+[shell]
+app_icon_colorize = true
+panel_anchor_bar = "default"
+polkit_agent = true
+
+[theme]
+builtin = "Catppuccin"
+community_palette = "Oxocarbon"
+mode = "dark"
+source = "builtin"
+wallpaper_scheme = "m3-content"
+
+[widget.audio_visualizer]
+show_when_idle = true
+
+[widget.clock]
+format = "{:%H:%M %d, %m %y}"
