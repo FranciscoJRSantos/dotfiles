@@ -281,8 +281,8 @@ hl.bind("F13", hl.dsp.exec_cmd(ipc .. "mic-mute"), { locked = true })
 -- Lock screen
 hl.bind(mainMod .. " + CTRL + Q", hl.dsp.exec_cmd(ipc .. "session lock"))
 
--- Lid switch: docked = no-op, undocked = lock and suspend (see scripts/lid-policy.sh)
-hl.bind("switch:on:Lid Switch", hl.dsp.exec_cmd(os.getenv("HOME") .. "/.config/hypr/scripts/lid-policy.sh on"), { locked = true })
+-- Lid switch: docked = no-op, undocked = lock and suspend (see scripts/power-policy.sh)
+hl.bind("switch:on:Lid Switch", hl.dsp.exec_cmd(os.getenv("HOME") .. "/.config/hypr/scripts/power-policy.sh on"), { locked = true })
 
 --------------------------------
 ---- WINDOWS AND WORKSPACES ----

@@ -29,8 +29,9 @@ behavior_order = [ "lock", "screen-off", "lock-and-suspend" ]
     timeout = 600.0
 
     [idle.behavior.lock-and-suspend]
-    action = "lock_and_suspend"
-    enabled = false
+    action = "command"
+    command = "~/.config/hypr/scripts/power-policy.sh idle"
+    enabled = true
     timeout = 900.0
 
     [idle.behavior.screen-off]

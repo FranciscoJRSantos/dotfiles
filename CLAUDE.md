@@ -36,7 +36,7 @@ Rule: a config stays only if the live Hyprland config, the shell config, or a bi
 ## Hyprland
 
 - `hyprland.lua` is the Lua config and must stay **self-contained**: it may not `require` a module that is not tracked. The Noctalia-generated `~/.config/hypr/noctalia/noctalia-colors.lua` (not tracked) is loaded with `pcall` so a missing file only means default borders.
-- The lid switch calls `hypr/scripts/lid-policy.sh` (docked: no-op; undocked: lock and suspend).
+- `hypr/scripts/power-policy.sh` holds the docked/undocked policy: the lid switch calls it with `on` (docked: no-op; undocked: lock and suspend), and the Noctalia idle behavior calls it with `idle` at 15 min (docked: no-op; undocked: suspend, the screen is already locked).
 - Validate a config with `Hyprland --verify-config -c <file>`, but run it with a private runtime dir: `env -u HYPRLAND_INSTANCE_SIGNATURE -u WAYLAND_DISPLAY XDG_RUNTIME_DIR=$(mktemp -d) Hyprland --verify-config -c <file>` (the dir must be mode 700). Inside a live session it otherwise cannot bind its IPC socket and never evaluates the config. Success prints `config ok`.
 - `~/.config/hypr/hyprland.lua` is a symlink to the repo file and Hyprland may auto-reload when it changes.
 
