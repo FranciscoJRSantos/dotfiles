@@ -204,9 +204,9 @@ hl.bind(mainMod .. " + E", hl.dsp.exec_cmd(file_manager))
 hl.bind(mainMod .. " + SHIFT + E", hl.dsp.exec_cmd(terminal .. " -e " .. tui_file_manager))
 hl.bind(mainMod .. " + SHIFT + T", hl.dsp.exec_cmd(editor))
 
--- Window switcher (MRU) on Alt+Tab; a quick tap switches to the previous window
-hl.bind("ALT + Tab", hl.dsp.exec_cmd(ipc .. "window-switcher hold"))
--- deferred: Alt+Shift+Tab reverse switching, Noctalia 5.4.0 rejects the `reverse` action
+-- Window switcher (MRU) on Super+Tab; a quick tap switches to the previous window
+hl.bind(mainMod .. " + Tab", hl.dsp.exec_cmd(ipc .. "window-switcher hold"))
+-- deferred: Super+Shift+Tab reverse switching, Noctalia 5.4.1 rejects the `reverse` action
 
 hl.bind("PRINT", hl.dsp.exec_cmd(ipc .. "screenshot-region"))
 hl.bind(mainMod .. " + PRINT", hl.dsp.exec_cmd(ipc .. "screenshot-fullscreen"))
@@ -237,10 +237,6 @@ hl.bind(mainMod .. " + SHIFT + H", hl.dsp.window.swap({ direction = "left" }))
 hl.bind(mainMod .. " + SHIFT + L", hl.dsp.window.swap({ direction = "right" }))
 hl.bind(mainMod .. " + SHIFT + K", hl.dsp.window.swap({ direction = "up" }))
 hl.bind(mainMod .. " + SHIFT + J", hl.dsp.window.swap({ direction = "down" }))
-
--- Cycle windows
-hl.bind(mainMod .. " + Tab", hl.dsp.layout("cyclenext"))
-hl.bind(mainMod .. " + SHIFT + Tab", hl.dsp.layout("cycleprev"))
 
 -- Switch workspaces / move windows to workspaces with mainMod + [0-9]
 for i = 1, 10 do
