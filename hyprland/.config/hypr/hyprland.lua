@@ -288,10 +288,28 @@ hl.bind("switch:on:Lid Switch", hl.dsp.exec_cmd(os.getenv("HOME") .. "/.config/h
 ---- WINDOWS AND WORKSPACES ----
 --------------------------------
 
+-- Keep workspaces 1-10 alive so the bar always shows a stable row; the four
+-- named ones are where the autostarted apps land.
+local workspace_names = { [1] = "slack", [2] = "web", [3] = "code", [10] = "zen" }
+for i = 1, 10 do
+    hl.workspace_rule({ workspace = tostring(i), persistent = true, default_name = workspace_names[i] })
+end
+
 hl.workspace_rule({ workspace = "2", layout = "monocle" })
 hl.workspace_rule({ workspace = "3", layout = "monocle" })
 hl.workspace_rule({ workspace = "4", layout = "monocle" })
 hl.workspace_rule({ workspace = "10", layout = "monocle" })
+
+-- Noctalia panels and popups: no slide animations, blur everything, and let
+-- translucent areas of the layer contribute to the blur.
+hl.layer_rule({
+    name = "Noctalia panels",
+    match = { namespace = "^noctalia-(bar-.+|notification|dock|panel|attached-panel|osd|window-switcher)$" },
+    no_anim = true,
+    ignore_alpha = 0.5,
+    blur = true,
+    blur_popups = true,
+})
 
 hl.window_rule({
     name = "Float Bluetooth Manager",
@@ -316,6 +334,28 @@ hl.window_rule({
     float = true,
     size = {800, 450},
     pin = true
+})
+
+hl.window_rule({
+    name = "Float Noctalia Settings",
+    match = {
+        class = "dev.noctalia.Noctalia",
+    },
+    float = true,
+    size = { 1080, 920 },
+})
+
+-- Scratchpad: a floating window in the special:magic workspace, centered and
+-- slightly translucent so the workspace behind it stays readable.
+hl.window_rule({
+    name = "Scratchpad",
+    match = {
+        workspace = "special:magic",
+    },
+    float = true,
+    center = true,
+    size = { "monitor_w * 0.8", "monitor_h * 0.8" },
+    opacity = "0.95 0.95",
 })
 
 
