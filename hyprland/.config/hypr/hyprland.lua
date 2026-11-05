@@ -57,7 +57,6 @@ hl.on("hyprland.start", function()
     apply_monitor_profile()
     hl.exec_cmd("noctalia")
     hl.exec_cmd("nm-applet --indicator")
-    hl.exec_cmd("blueman-applet")
     hl.exec_cmd("emacs --daemon")
 
     hl.exec_cmd("flatpak run com.slack.Slack", { workspace = "1 silent" })
