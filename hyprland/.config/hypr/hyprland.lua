@@ -55,7 +55,6 @@ local ipc = "noctalia msg "
 
 hl.on("hyprland.start", function()
     apply_monitor_profile()
-    hl.exec_cmd("systemctl --user start hyprland-session.target")
     hl.exec_cmd("noctalia")
     hl.exec_cmd("nm-applet --indicator")
     hl.exec_cmd("blueman-applet")
@@ -67,11 +66,9 @@ hl.on("hyprland.start", function()
     hl.exec_cmd(terminal, { workspace = "3 silent" })
     hl.exec_cmd("flatpak run app.zen_browser.zen", { workspace = "10 silent" })
 
+    -- Hyprland starts hyprland-session.target itself and stops the graphical session on
+    -- exit, so neither the target nor a shutdown handler belongs here.
     hl.exec_cmd("dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP")
-end)
-
-hl.on("hyprland.shutdown", function()
-    os.execute("systemctl --user stop hyprland-session.target && sleep 0.1")
 end)
 
 -------------------------------
