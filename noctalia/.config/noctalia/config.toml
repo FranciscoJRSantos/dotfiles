@@ -55,6 +55,22 @@ polkit_agent = true
     [shell.window_switcher]
     mru = true
 
+    [shell.launcher.dmenu.entry.ssh]
+    command = "[ -f ~/.ssh/config ] && grep -E '^Host ' ~/.ssh/config | awk '{print $2}' | grep -v '[*]'"
+    label = "SSH"
+    prefix = "ssh"
+    glyph = "server"
+    global = false
+    exec = "ghostty -e ssh {selection}"
+
+    [shell.launcher.dmenu.entry.proj]
+    command = "zoxide query -l | while read -r d; do [ -e \"$d/.git\" ] && echo \"$d\"; done"
+    label = "Projects"
+    prefix = "proj"
+    glyph = "folder"
+    global = false
+    exec = "ghostty --working-directory={selection} -e opencode"
+
 [theme]
 builtin = "Catppuccin"
 community_palette = "Oxocarbon"
