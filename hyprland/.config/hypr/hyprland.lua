@@ -205,7 +205,13 @@ hl.bind(mainMod .. " + E", hl.dsp.exec_cmd(file_manager))
 hl.bind(mainMod .. " + SHIFT + E", hl.dsp.exec_cmd(terminal .. " -e " .. tui_file_manager))
 hl.bind(mainMod .. " + SHIFT + T", hl.dsp.exec_cmd(editor))
 
-hl.bind("PRINT", hl.dsp.exec_cmd("hyprshot -m region --clipboard-only"))
+-- Window switcher (MRU) on Alt+Tab; a quick tap switches to the previous window
+hl.bind("ALT + Tab", hl.dsp.exec_cmd(ipc .. "window-switcher hold"))
+-- deferred: Alt+Shift+Tab reverse switching, Noctalia 5.4.0 rejects the `reverse` action
+
+hl.bind("PRINT", hl.dsp.exec_cmd(ipc .. "screenshot-region"))
+hl.bind(mainMod .. " + PRINT", hl.dsp.exec_cmd(ipc .. "screenshot-fullscreen"))
+hl.bind(mainMod .. " + A", hl.dsp.exec_cmd(ipc .. "panel-toggle control-center"))
 hl.bind(mainMod .. " + V", hl.dsp.exec_cmd(ipc .. "panel-toggle clipboard"))
 
 hl.bind(mainMod .. " + Q", hl.dsp.window.close())

@@ -46,6 +46,14 @@ app_icon_colorize = true
 panel_anchor_bar = "default"
 polkit_agent = true
 
+    [shell.screenshot]
+    annotate = false
+    copy_to_clipboard = true
+    save_to_file = false
+
+    [shell.window_switcher]
+    mru = true
+
 [theme]
 builtin = "Catppuccin"
 community_palette = "Oxocarbon"
