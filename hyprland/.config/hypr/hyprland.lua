@@ -71,13 +71,16 @@ local ipc = "noctalia msg "
 
 hl.on("hyprland.start", function()
     apply_monitor_profile()
-    hl.exec_cmd("noctalia")
-    hl.exec_cmd("nm-applet --indicator")
-    hl.exec_cmd("emacs --daemon")
+    -- Noctalia and the Emacs daemon are systemd user units (systemd/ package),
+    -- started with hyprland-session.target. nm-applet comes from XDG autostart,
+    -- so none of them are exec'd here.
 
     hl.exec_cmd("flatpak run com.slack.Slack", { workspace = "1 silent" })
     hl.exec_cmd(browser, { workspace = "2 silent" })
-    hl.exec_cmd(editor, { workspace = "3 silent" })
+    -- `systemctl start` blocks until the Type=notify daemon is ready, then the
+    -- client attaches; the workspace comes from the one-shot rule below, not
+    -- from an exec token (a forked child breaks Hyprland's PID association).
+    hl.exec_cmd([[bash -c 'systemctl --user start emacs.service && emacsclient -nc']])
     hl.exec_cmd(terminal, { workspace = "3 silent" })
     hl.exec_cmd("flatpak run app.zen_browser.zen", { workspace = "10 silent" })
 end)
@@ -358,6 +361,22 @@ hl.window_rule({
     move = "monitor_w-window_w-20 monitor_h-window_h-20",
     pin = true,
 })
+
+-- The first Emacs frame of the session lands on workspace 3, then the rule
+-- disables itself so later frames open wherever the user is. Emacs frames
+-- belong to the daemon's PID, so an exec-rule workspace token never matches.
+local emacs_ws3 = hl.window_rule({
+    name = "emacs-login-workspace",
+    match = { class = "^emacs$" },
+    workspace = "3 silent",
+})
+local emacs_ws3_sub
+emacs_ws3_sub = hl.on("window.open", function(w)
+    if w and w.class == "emacs" then
+        emacs_ws3:set_enabled(false)
+        emacs_ws3_sub:remove()
+    end
+end)
 
 hl.window_rule({
     name = "Float Noctalia Settings",

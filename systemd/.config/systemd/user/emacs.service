@@ -1,0 +1,19 @@
+[Unit]
+Description=Emacs daemon
+Documentation=info:emacs man:emacs(1) https://gnu.org/software/emacs/
+PartOf=graphical-session.target
+After=graphical-session.target
+
+[Service]
+Type=notify
+ExecStart=/usr/bin/emacs --fg-daemon
+# The leading - means a dead server (nothing to tell) is not a stop failure.
+ExecStop=-/usr/bin/emacsclient --eval "(save-buffers-kill-terminal)"
+# Always, not on-failure: keybinds need the server back after a clean exit too.
+# Consequence: `systemctl --user stop emacs.service` restarts it by design.
+Restart=always
+RestartSec=3
+SuccessExitStatus=15
+
+[Install]
+WantedBy=hyprland-session.target
