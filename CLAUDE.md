@@ -46,6 +46,20 @@ Rule: a config stays only if the live Hyprland config, the shell config, or a bi
 - `config.toml` is a pruned baseline from `noctalia config export`. To refresh it after changing settings in the UI, re-export and drop the machine-specific tables: `lockscreen_widgets` (per-monitor pixel layout), `wallpaper` (the daily wallpaper path changes) and `location`. Check it with `noctalia config validate <file>`.
 - Never track anything under `~/.local/state/noctalia/` (clipboard history, notification history, credential-migration state).
 
+## Session Units
+
+Session processes are systemd user units in `systemd/`, enabled with
+`WantedBy=hyprland-session.target` and started with the session (at boot with
+autologin, otherwise at login): `noctalia.service`, `emacs.service`,
+`nm-applet.service` and `1password.service`. `piper-tts.service` is the
+exception — it is a background service on `default.target`.
+
+This session does **not** start `xdg-desktop-autostart.target`, so entries in
+`~/.config/autostart` (including the one 1Password writes itself) do nothing.
+Add a tracked unit under `systemd/`, `stow -R systemd`, then
+`systemctl --user enable <unit>`; the enable symlink lives in
+`~/.config/systemd/user/hyprland-session.target.wants/` and is not tracked.
+
 ## Speech
 
 - **Read-aloud:** `bin/.local/bin/read-selection.sh` speaks the PRIMARY selection
