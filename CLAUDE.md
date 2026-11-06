@@ -75,6 +75,9 @@ Add a tracked unit under `systemd/`, `stow -R systemd`, then
   voice model loaded, because the CLI reloads it on every run (~3s). The script
   POSTs to `http://127.0.0.1:5000/synthesize` and falls back to the CLI when the
   unit is down. Enable with `systemctl --user enable --now piper-tts.service`.
+- Runtime deps: `piper` (below), `paplay` (`pulseaudio-utils`), `jq`, `curl`,
+  `wl-paste` (`wl-clipboard`). A missing player or piper raises a desktop
+  notification instead of failing silently.
 - Install (not tracked): `uv tool install 'piper-tts[http]'`; voices live in
   `~/.local/share/piper` and are downloaded with
   `~/.local/share/uv/tools/piper-tts/bin/python -m piper.download_voices <voice> --data-dir ~/.local/share/piper`.

@@ -275,6 +275,16 @@ else
     ok "a new read stops the previous one"
 fi
 
+# shellcheck disable=SC1090
+(source "$script"; require_player) >/dev/null 2>&1
+assert_eq "require_player accepts an installed player" '0' "$?"
+
+env PATH=/nonexistent /bin/bash -c "source '$script'; require_player" \
+    >/dev/null 2>"$work/out/noplayer.err"
+assert_eq "require_player fails when paplay is missing" '1' "$?"
+assert_contains "require_player names the package to install" 'pulseaudio-utils' \
+    "$(cat "$work/out/noplayer.err" 2>/dev/null)"
+
 # --- summary ---------------------------------------------------------------
 
 printf '\n%d passed, %d failed\n' "$pass" "$fail"

@@ -61,6 +61,17 @@ stop_playback() {
     kill -TERM "$pid" 2>/dev/null || true
 }
 
+# A missing player must be loud: a silent exit is indistinguishable from
+# "nothing selected", which is how a removed pulseaudio-utils looked like a
+# dead keybinding.
+require_player() {
+    command -v paplay >/dev/null 2>&1 && return 0
+    local msg="read-selection: paplay not found (install: sudo dnf install pulseaudio-utils)"
+    printf '%s\n' "$msg" >&2
+    command -v notify-send >/dev/null 2>&1 && notify-send -a read-selection "Read aloud" "$msg"
+    return 1
+}
+
 # Play in the background and wait, so a TERM can interrupt the wait itself
 # (bash defers traps while a foreground child runs).
 play_file() {
@@ -218,6 +229,7 @@ main() {
     if [[ -z ${text//[[:space:]]/} ]]; then
         exit 0
     fi
+    require_player || exit 1
 
     stop_playback
     printf '%s\n' "$$" >"$PID_FILE"
