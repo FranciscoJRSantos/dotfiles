@@ -1,13 +1,4 @@
-// Place your key bindings in this file to override the defaults
-[
-    {
-        "key": "capslock",
-        "command": "vim.remap",
-        "args": {
-            "after": [
-                "<Esc>"
-            ]
-        },
-        "when": "editorTextFocus && vim.active"
-    }
-]
+// Place your key bindings in this file to override the defaults.
+// Capslock is remapped to Escape in the keyboard layout (caps:swapescape),
+// so there is no capslock key for VSCodeVim to remap here.
+[]

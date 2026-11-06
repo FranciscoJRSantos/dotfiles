@@ -17,7 +17,7 @@
     },
     "containers.containerClient": "com.microsoft.visualstudio.containers.docker",
     "containers.orchestratorClient": "com.microsoft.visualstudio.orchestrators.dockercompose",
-    "python.defaultInterpreterPath": "/sbin/python",
+    "python.defaultInterpreterPath": "${env:HOME}/.local/share/mise/shims/python",
     "python.analysis.typeCheckingMode": "standard",
     "breadcrumbs.enabled": false,
     "jupyter.askForKernelRestart": false,
@@ -89,7 +89,7 @@
             ]
         }
     ],
-    "vim.statusBarColorControl": true,
+    "vim.statusBarColorControl": false,
     "vim.useSystemClipboard": true,
     "vim.incsearch": true,
     "vim.useCtrlKeys": true,
@@ -105,17 +105,6 @@
         "<C-z>": false,
         "<C-p>": false
     },
-    "workbench.colorCustomizations": {
-        "statusBar.background": "#005f5f",
-        "statusBar.noFolderBackground": "#005f5f",
-        "statusBar.debuggingBackground": "#005f5f",
-        "statusBar.foreground": "#ffffff",
-        "statusBar.debuggingForeground": "#ffffff"
-    },
-    "claudeCode.preferredLocation": "panel",
-    "claudeCode.initialPermissionMode": "plan",
-    "chat.mcp.gallery.enabled": true,
     "window.menuBarVisibility": "compact",
-    "editor.fontSize": 18,
-    "claudeCode.selectedModel": "opusplan"
+    "editor.fontSize": 18
 }
