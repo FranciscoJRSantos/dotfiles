@@ -14,12 +14,6 @@
 ;;      Alternatively, press 'gd' (or 'C-c c d') on a module to browse its
 ;;      directory (for easy access to its source code).
 
-(setq native-comp-always-compile t)
-(setq package-native-compile t)
-(after! (doom-packages straight)
-  (setq straight--native-comp-available t))
-
-
 (doom! :input
        ;;bidi                           ; (tfel ot) thgir etirw uoy gnipleh
        ;;chinese
@@ -102,7 +96,6 @@
        direnv
        docker
        editorconfig        ; let someone else argue about tabs vs spaces
-       ein                 ; tame Jupyter notebooks with emacs
        (eval +overlay)     ; run code, run (also, repls)
        lookup              ; navigate your code and its documentation
        ;;llm               ; when I said you needed friends, I didn't mean...
@@ -121,8 +114,6 @@
        ;;tty               ; improve the terminal Emacs experience
 
        :lang
-       (csharp +dotnet +lsp +tree-sitter) ; unity, .NET, and mono shenanigans
-       (go +tree-sitter +lsp)             ; the hipster dialect
        (json +lsp +tree-sitter)           ; At least it ain't XML
        (javascript +lsp +tree-sitter)     ; all(hope(abandon(ye(who(enter(here))))))
        (org +journal +present)            ; organize your plain life in plain text
@@ -133,8 +124,8 @@
        (sh +fish +tree-sitter)            ; she sells {ba,z,fi}sh shells on the C xor
        (web +lsp +tree-sitter)            ; the tubes
        (yaml +lsp +tree-sitter)           ; JSON, but readable
-       (php +lsp +tree-sitter)            ; perl's insecure younger brother
        emacs-lisp                         ; drown in parentheses
+       (lua +lsp)                         ; hyprland.lua
        markdown                           ; writing docs for people to ignore
        ;;nim               ; python + lisp at the speed of c
        ;;nix               ; I hereby declare "nix geht mehr!"
@@ -196,7 +187,6 @@
        ;;emms
        ;;everywhere        ; *leave* Emacs!? You must be joking
        ;;irc               ; how neckbeards socialize
-       (rss +org)        ; emacs as an RSS reader
 
        :config
        ;;literate

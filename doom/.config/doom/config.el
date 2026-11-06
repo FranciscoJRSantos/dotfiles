@@ -2,8 +2,8 @@
 
 (setq doom-font (font-spec :family "Fira Code" :size 18 :weight 'semi-light))
 
-(setq doom-theme 'catppuccin)
-(setq catppuccin-flavor 'latte)
+;; No doom-theme on purpose: auto-dark owns loading catppuccin, otherwise the
+;; theme is applied twice on every startup (doom-theme, then auto-dark's reload).
 
 ;; Disable projectile caching
 (setq projectile-enable-caching nil)
@@ -29,22 +29,17 @@
               (unless (eq catppuccin-flavor 'latte)
                 (setq catppuccin-flavor 'latte)
                 (catppuccin-reload))))
+  ;; Under the daemon there is no frame when config.el loads; auto-dark's
+  ;; README recommends (re)applying it once the first frame exists.
+  (add-hook 'server-after-make-frame-hook
+            (lambda () (auto-dark-mode 1)))
   (auto-dark-mode 1))
 
-;; Python: use ruff as LSP server (linting + formatting) and ty for type checking
-(defun my/find-ruff ()
-  "Return project-local ruff if present, else fall back to system ruff."
-  (when-let* ((root (and (project-current) (project-root (project-current))))
-              (local (cl-find-if #'file-executable-p
-                                 (mapcar (lambda (p) (expand-file-name p root))
-                                         '(".venv/bin/ruff" "venv/bin/ruff")))))
-    local))
-
+;; Python: ty is the LSP (completion, hover, go-to-definition). ruff only
+;; formats, through apheleia below.
 (after! eglot
   (add-to-list 'eglot-server-programs
-               `((python-mode python-ts-mode)
-                 . ,(lambda (&rest _)
-                      (list (or (my/find-ruff) "ruff") "server" "--preview")))))
+               '((python-mode python-ts-mode) . ("ty" "server"))))
 
 ;; Use ruff for formatting Python buffers via apheleia
 (after! apheleia
