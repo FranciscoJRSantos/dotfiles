@@ -4,28 +4,44 @@
 
 hl.monitor({ output = "", mode = "preferred", position = "auto", scale = "1" })
 
--- Both desks use a single external monitor with the laptop panel off; only the
--- mobile profile brings eDP-1 back. The home/office profiles disable it, so the
--- re-enable must pass disabled = false explicitly: a rule that only sets
--- mode/position is treated as identical to the active one and is never applied.
+-- Both desks keep the laptop panel off; only the mobile profile brings eDP-1
+-- back. The home/office profiles disable it, so the re-enable must pass
+-- disabled = false explicitly: a rule that only sets mode/position is treated
+-- as identical to the active one and is never applied.
 local function laptop_on(position)
     hl.monitor({ output = "eDP-1", mode = "1920x1200@60", position = position, scale = "1", disabled = false })
 end
 
+-- Office secondary: 34" 2560x1080 ultrawide, mounted vertically right of the
+-- ASUS. Matched by EDID description, not port, because it sits on HDMI-A-1,
+-- the same port the home OLED uses. It advertises a 4K mode that it only
+-- downscales, so pin the native mode. transform = 3 (270°) matches how it is
+-- physically mounted; 1 renders upside down. Rotated it is 1080x2560 logical; the
+-- ASUS is shifted down 560 so their vertical centres line up.
+local OFFICE_VERTICAL = "LG Electronics LG ULTRAGEAR 0x00023FA3"
+
 local function apply_monitor_profile()
     local monitors = hl.get_monitors()
-    local names = {}
+    local names, descs = {}, {}
     for _, m in ipairs(monitors) do
         names[m.name] = true
+        descs[m.description] = true
     end
 
-    if names["HDMI-A-1"] then
+    -- Office first: its ultrawide also occupies HDMI-A-1, which would
+    -- otherwise be mistaken for the home OLED.
+    if names["DP-1"] then
+        -- Office: 1440p main, optional vertical ultrawide on the right, laptop panel off
+        if descs[OFFICE_VERTICAL] then
+            hl.monitor({ output = "DP-1", mode = "2560x1440@60", position = "0x560", scale = "1" })
+            hl.monitor({ output = "desc:" .. OFFICE_VERTICAL, mode = "2560x1080@144", position = "2560x0", scale = "1", transform = 3 })
+        else
+            hl.monitor({ output = "DP-1", mode = "2560x1440@60", position = "0x0", scale = "1" })
+        end
+        hl.monitor({ output = "eDP-1", disabled = true })
+    elseif names["HDMI-A-1"] then
         -- Home: single 4K OLED, laptop panel off regardless of lid state
         hl.monitor({ output = "HDMI-A-1", mode = "3840x2160@120", position = "0x0", scale = "1" })
-        hl.monitor({ output = "eDP-1", disabled = true })
-    elseif names["DP-1"] then
-        -- Office: single 1440p, laptop panel off
-        hl.monitor({ output = "DP-1", mode = "2560x1440@60", position = "0x0", scale = "1" })
         hl.monitor({ output = "eDP-1", disabled = true })
     else
         -- Mobile: laptop only
@@ -64,10 +80,6 @@ hl.on("hyprland.start", function()
     hl.exec_cmd(editor, { workspace = "3 silent" })
     hl.exec_cmd(terminal, { workspace = "3 silent" })
     hl.exec_cmd("flatpak run app.zen_browser.zen", { workspace = "10 silent" })
-
-    -- Hyprland starts hyprland-session.target itself and stops the graphical session on
-    -- exit, so neither the target nor a shutdown handler belongs here.
-    hl.exec_cmd("dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP")
 end)
 
 -------------------------------
@@ -129,6 +141,18 @@ hl.config({
 
     misc = {
         enable_anr_dialog = false,
+        -- A restarted Noctalia must be able to reclaim the session lock;
+        -- without this a crash leaves the screen stuck on the dead lock client.
+        allow_session_lock_restore = true,
+        disable_hyprland_logo = true,
+        background_color = "0xff000000",
+        -- Adaptive sync everywhere, including fullscreen-only apps.
+        vrr = 3,
+    },
+
+    ecosystem = {
+        no_update_news = true,
+        no_donation_nag = true,
     },
 
     input = {
@@ -182,7 +206,12 @@ hl.animation({ leaf = "workspacesOut", enabled = true, speed = 1.94, bezier = "a
 
 hl.device({
     name = "ergo-k860-keyboard",
-    kb_options = "caps:swapescape, altwin:swap_alt_win",
+    -- No altwin:swap_alt_win on purpose. Put the keyboard itself in macOS
+    -- layout mode (Fn+O, held ~3s) so its firmware sends Cmd as LWIN (Super)
+    -- and Opt as LALT (Alt). Then no software swap is needed.
+    -- If you ever switch it back to PC layout (Fn+P), Cmd/Alt emits LALT and
+    -- Opt/Start emits LWIN, and you'd need "altwin:swap_alt_win" here instead.
+    kb_options = "caps:swapescape",
 })
 
 hl.device({
@@ -219,7 +248,8 @@ hl.bind(mainMod .. " + R", hl.dsp.exec_cmd(os.getenv("HOME") .. "/.local/bin/rea
 hl.bind(mainMod .. " + SHIFT + R", hl.dsp.exec_cmd(os.getenv("HOME") .. "/.local/bin/read-selection.sh --stop"))
 
 hl.bind(mainMod .. " + Q", hl.dsp.window.close())
-hl.bind(mainMod .. " + SHIFT + M", hl.dsp.exit())
+-- Session panel (lock, logout, reboot, shutdown) instead of an instant exit.
+hl.bind(mainMod .. " + SHIFT + M", hl.dsp.exec_cmd(ipc .. "panel-toggle session"))
 hl.bind(mainMod .. " + SHIFT + F", hl.dsp.window.float({ action = "toggle" }))
 hl.bind(mainMod .. " + F", hl.dsp.window.fullscreen(1))
 hl.bind(mainMod .. " + P", hl.dsp.window.pseudo())
@@ -230,6 +260,9 @@ hl.bind(mainMod .. " + CTRL + L", hl.dsp.exec_cmd([[bash -c 'W=$(hyprctl -j acti
 -- Move active workspace to a specific monitor
 hl.bind(mainMod .. " + CTRL + 0", hl.dsp.workspace.move({ monitor = 0 }))
 hl.bind(mainMod .. " + CTRL + 1", hl.dsp.workspace.move({ monitor = 1 }))
+-- Office vertical ultrawide, by description: its numeric ID depends on what
+-- else is plugged in (eDP-1 keeps ID 0 even while disabled).
+hl.bind(mainMod .. " + CTRL + 2", hl.dsp.workspace.move({ monitor = "desc:" .. OFFICE_VERTICAL }))
 
 -- Move focus with mainMod + HJKL
 hl.bind(mainMod .. " + H", hl.dsp.focus({ direction = "left" }))
@@ -275,7 +308,7 @@ hl.bind("XF86AudioPrev", hl.dsp.exec_cmd(ipc .. "media previous"), { locked = tr
 hl.bind("XF86AudioNext", hl.dsp.exec_cmd(ipc .. "media next"), { locked = true })
 
 -- Mute mic
-hl.bind("XF86AudioMicMute", hl.dsp.exec_cmd(ipc .. "mic-mute"))
+hl.bind("XF86AudioMicMute", hl.dsp.exec_cmd(ipc .. "mic-mute"), { locked = true })
 hl.bind("F13", hl.dsp.exec_cmd(ipc .. "mic-mute"), { locked = true })
 
 -- Lock screen
@@ -311,29 +344,19 @@ hl.layer_rule({
     blur_popups = true,
 })
 
-hl.window_rule({
-    name = "Float Bluetooth Manager",
-    match = {
-        title = "^(Bluetooth Manager)$",
-    },
-    float = true
-})
-hl.window_rule({
-    name = "Float Volume Control",
-    match = {
-        title = "^(Volume Control)$",
-    },
-    float = true
-})
-
+-- Picture-in-Picture: small floating window pinned to the bottom-right corner.
+-- The class match keeps ordinary browser windows with a matching title tiled.
 hl.window_rule({
     name = "Picture in Picture",
     match = {
+        class = "^(firefox|chromium-browser|zen)$",
         title = "^(Picture-in-Picture|Firefox|Picture in picture|Meet)$",
     },
     float = true,
-    size = {800, 450},
-    pin = true
+    size = { 800, 450 },
+    keep_aspect_ratio = true,
+    move = "monitor_w-window_w-20 monitor_h-window_h-20",
+    pin = true,
 })
 
 hl.window_rule({
