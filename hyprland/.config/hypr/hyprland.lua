@@ -212,6 +212,11 @@ hl.bind("PRINT", hl.dsp.exec_cmd(ipc .. "screenshot-region"))
 hl.bind(mainMod .. " + PRINT", hl.dsp.exec_cmd(ipc .. "screenshot-fullscreen"))
 hl.bind(mainMod .. " + A", hl.dsp.exec_cmd(ipc .. "panel-toggle control-center"))
 hl.bind(mainMod .. " + V", hl.dsp.exec_cmd(ipc .. "panel-toggle clipboard"))
+-- Read the PRIMARY selection (or clipboard) aloud with Piper. Absolute path
+-- because ~/.local/bin is not guaranteed to be on Hyprland's PATH.
+hl.bind(mainMod .. " + R", hl.dsp.exec_cmd(os.getenv("HOME") .. "/.local/bin/read-selection.sh"))
+-- Stop the read that is currently playing.
+hl.bind(mainMod .. " + SHIFT + R", hl.dsp.exec_cmd(os.getenv("HOME") .. "/.local/bin/read-selection.sh --stop"))
 
 hl.bind(mainMod .. " + Q", hl.dsp.window.close())
 hl.bind(mainMod .. " + SHIFT + M", hl.dsp.exit())

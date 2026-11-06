@@ -1,0 +1,14 @@
+[Unit]
+Description=Piper TTS HTTP server (read-aloud backend for Super+R)
+Documentation=https://github.com/OHF-Voice/piper1-gpl/blob/main/docs/API_HTTP.md
+After=pipewire.service
+
+[Service]
+# Keeps the voice model loaded; the CLI reloads it on every invocation (~3s).
+ExecStart=%h/.local/share/uv/tools/piper-tts/bin/python -m piper.http_server \
+    -m en_US-ryan-high --data-dir %h/.local/share/piper --host 127.0.0.1 --port 5000
+Restart=on-failure
+RestartSec=2
+
+[Install]
+WantedBy=default.target

@@ -8,7 +8,7 @@ Personal dotfiles managed with **GNU Stow**. Each top-level directory is a stow 
 
 **`fedora-files` is the live branch** and the only one that is maintained. It runs Hyprland with the Noctalia shell on Fedora. `main` (Sway, Alacritty, Rofi, Waybar) and `arch-files` (Arch + Waybar/Mako/Fuzzel) are archival history of earlier setups; do not clean or update them. Removed configs stay recoverable from those branches and from earlier `fedora-files` commits.
 
-Packages on this branch: `doom`, `fish`, `ghostty`, `git`, `hyprland`, `mise`, `noctalia`, `nvim`, `portals`, `vscode`.
+Packages on this branch: `bin`, `doom`, `fish`, `ghostty`, `git`, `hyprland`, `mise`, `noctalia`, `nvim`, `portals`, `systemd`, `vscode`.
 
 ## Stow Layout
 
@@ -45,6 +45,29 @@ Rule: a config stays only if the live Hyprland config, the shell config, or a bi
 - Noctalia builds its config from every `*.toml` in `~/.config/noctalia/` (tracked: `noctalia/.config/noctalia/config.toml`) and then the Settings UI's `~/.local/state/noctalia/settings.toml` on top. The state file overrides the tracked one. `~/.config/noctalia` is a directory-level symlink to the repo directory, so any `*.toml` added there is live immediately.
 - `config.toml` is a pruned baseline from `noctalia config export`. To refresh it after changing settings in the UI, re-export and drop the machine-specific tables: `lockscreen_widgets` (per-monitor pixel layout), `wallpaper` (the daily wallpaper path changes) and `location`. Check it with `noctalia config validate <file>`.
 - Never track anything under `~/.local/state/noctalia/` (clipboard history, notification history, credential-migration state).
+
+## Speech
+
+- **Read-aloud:** `bin/.local/bin/read-selection.sh` speaks the PRIMARY selection
+  (clipboard as fallback) with Piper. It strips markdown, ANSI escapes, box
+  drawing and fenced code, splits the text into sentence chunks and streams them,
+  so audio starts after the first sentence instead of after the whole selection.
+  Bound to `Super+R` in `hyprland.lua` with an absolute path, because
+  `~/.local/bin` is not guaranteed on Hyprland's PATH. `Super+Shift+R` runs it
+  with `--stop`, which terminates the current read (a new read also stops the
+  previous one, so presses never stack).
+- **Piper server:** `systemd/.config/systemd/user/piper-tts.service` keeps the
+  voice model loaded, because the CLI reloads it on every run (~3s). The script
+  POSTs to `http://127.0.0.1:5000/synthesize` and falls back to the CLI when the
+  unit is down. Enable with `systemctl --user enable --now piper-tts.service`.
+- Install (not tracked): `uv tool install 'piper-tts[http]'`; voices live in
+  `~/.local/share/piper` and are downloaded with
+  `~/.local/share/uv/tools/piper-tts/bin/python -m piper.download_voices <voice> --data-dir ~/.local/share/piper`.
+  Default voice is `en_US-ryan-high`; override with `PIPER_VOICE` (the voice must
+  exist in the data dir), `PIPER_DATA_DIR` or `PIPER_URL`. Portuguese needs a
+  `pt_BR` voice; there is no language detection.
+- Tests: `bash tests/read-selection.sh`. `tests/` is a plain directory, not a
+  stow package.
 
 ## Fish
 
