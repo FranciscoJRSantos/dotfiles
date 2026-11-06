@@ -12,6 +12,36 @@ local function laptop_on(position)
     hl.monitor({ output = "eDP-1", mode = "1920x1200@60", position = position, scale = "1", disabled = false })
 end
 
+-- The lid decides whether the laptop panel is on when docked (decision D2):
+-- open = panel on, closed = panel off. Read it from the kernel because
+-- Hyprland has no lid event, only the `switch:*:Lid Switch` binds.
+local LID_STATE_FILES = {
+    "/proc/acpi/button/lid/LID0/state",
+    "/proc/acpi/button/lid/LID1/state",
+    "/proc/acpi/button/lid/LID/state",
+}
+local function lid_closed()
+    for _, path in ipairs(LID_STATE_FILES) do
+        local f = io.open(path, "r")
+        if f then
+            local state = f:read("*a") or ""
+            f:close()
+            return state:find("closed", 1, true) ~= nil
+        end
+    end
+    return false -- no lid switch (desktop): behave as if open
+end
+
+-- Docked: mirror the lid on eDP-1 and let Hyprland place the panel next to the
+-- external layout.
+local function apply_lid_to_laptop_panel()
+    if lid_closed() then
+        hl.monitor({ output = "eDP-1", disabled = true })
+    else
+        hl.monitor({ output = "eDP-1", mode = "1920x1200@60", position = "auto", scale = "1", disabled = false })
+    end
+end
+
 -- Office secondary: 34" 2560x1080 ultrawide, mounted vertically right of the
 -- ASUS. Matched by EDID description, not port, because it sits on HDMI-A-1,
 -- the same port the home OLED uses. It advertises a 4K mode that it only
@@ -31,22 +61,23 @@ local function apply_monitor_profile()
     -- Office first: its ultrawide also occupies HDMI-A-1, which would
     -- otherwise be mistaken for the home OLED.
     if names["DP-1"] then
-        -- Office: 1440p main, optional vertical ultrawide on the right, laptop panel off
+        -- Office: 1440p main, optional vertical ultrawide on the right
         if descs[OFFICE_VERTICAL] then
             hl.monitor({ output = "DP-1", mode = "2560x1440@60", position = "0x560", scale = "1" })
             hl.monitor({ output = "desc:" .. OFFICE_VERTICAL, mode = "2560x1080@144", position = "2560x0", scale = "1", transform = 3 })
         else
             hl.monitor({ output = "DP-1", mode = "2560x1440@60", position = "0x0", scale = "1" })
         end
-        hl.monitor({ output = "eDP-1", disabled = true })
     elseif names["HDMI-A-1"] then
-        -- Home: single 4K OLED, laptop panel off regardless of lid state
+        -- Home: single 4K OLED
         hl.monitor({ output = "HDMI-A-1", mode = "3840x2160@120", position = "0x0", scale = "1" })
-        hl.monitor({ output = "eDP-1", disabled = true })
     else
-        -- Mobile: laptop only
+        -- Mobile: laptop only, whatever the lid says
         laptop_on("0x0")
+        return
     end
+    -- With an external attached, the lid owns the laptop panel.
+    apply_lid_to_laptop_panel()
 end
 
 apply_monitor_profile() -- re-apply on config reload, not just on hotplug/start
@@ -317,8 +348,17 @@ hl.bind("F13", hl.dsp.exec_cmd(ipc .. "mic-mute"), { locked = true })
 -- Lock screen
 hl.bind(mainMod .. " + CTRL + Q", hl.dsp.exec_cmd(ipc .. "session lock"))
 
--- Lid switch: docked = no-op, undocked = lock and suspend (see scripts/power-policy.sh)
-hl.bind("switch:on:Lid Switch", hl.dsp.exec_cmd(os.getenv("HOME") .. "/.config/hypr/scripts/power-policy.sh on"), { locked = true })
+-- Lid switch: re-apply the layout so eDP-1 follows the lid, then hand the
+-- docked/undocked decision to power-policy.sh (docked = no-op, undocked = lock
+-- and suspend). Hyprland exposes no lid event, only these binds.
+local power_policy = os.getenv("HOME") .. "/.config/hypr/scripts/power-policy.sh"
+hl.bind("switch:on:Lid Switch", function()
+    apply_monitor_profile()
+    hl.exec_cmd(power_policy .. " on")
+end, { locked = true })
+hl.bind("switch:off:Lid Switch", function()
+    apply_monitor_profile()
+end, { locked = true })
 
 --------------------------------
 ---- WINDOWS AND WORKSPACES ----
