@@ -1,18 +1,20 @@
 if status is-interactive
-    set PATH $HOME/.local/bin:$HOME/bin:$HOME/.opencode/bin:$PATH
+    # Idempotent: fish_add_path skips entries already present and persists them,
+    # so nested shells no longer stack duplicate PATH entries.
+    fish_add_path -g $HOME/.local/bin $HOME/bin $HOME/.opencode/bin
 
-    set -Ux EMACS_USE_XDG 1
     set -gx EDITOR nvim
 
     ### Alias
     #
     alias doom="~/.config/emacs/bin/doom"
-    alias et="emacs -nw"
-    alias dc="docker compose"
+    # Attach to the Emacs daemon; only cold-start it as a fallback.
+    alias et="emacsclient -t -a ''"
+    abbr --add dc "docker compose"
 
     ### Shell Integrations
-    eval $(mise activate fish | source)
-    source ~/.config/fish/fzf-keybindings.fish
-    eval $(zoxide init fish --cmd cd | source)
+    mise activate fish | source
+    fzf --fish | source
+    zoxide init fish --cmd cd | source
     direnv hook fish | source
 end
