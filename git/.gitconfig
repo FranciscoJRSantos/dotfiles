@@ -13,6 +13,21 @@
 	user = FranciscoJRSantos
 [fetch]
 	prune = true
+[pull]
+	rebase = true
+[push]
+	autoSetupRemote = true
+[rebase]
+	autoSquash = true
+	updateRefs = true
+[merge]
+	conflictStyle = zdiff3
+[diff]
+	algorithm = histogram
+[rerere]
+	enabled = true
+[commit]
+	verbose = true
 [filter "lfs"]
 	clean = git-lfs clean -- %f
 	smudge = git-lfs smudge -- %f
@@ -33,6 +48,3 @@
 
 [includeIf "gitdir:~/Documents/projects/AIH/**"]
   path = ~/Documents/projects/AIH/.gitconfig
-
-[includeIf "gitdir:~/Documents/personal-projects/**"]
-  path = ~/Documents/personal-projects/.gitconfig
