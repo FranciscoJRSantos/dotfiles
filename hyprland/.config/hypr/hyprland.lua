@@ -2,88 +2,13 @@
 ---- MONITORS ----
 ------------------
 
+-- Monitor layout is owned by hyprmoncfg: profiles live in
+-- ~/.config/hyprmoncfg/profiles/ (hardware-keyed) and hyprmoncfgd applies the
+-- best match on hotplug and lid changes. It writes hyprmoncfg-monitors.lua and
+-- loads it after this file. This catch-all only covers the instant before that
+-- file runs and any output no profile mentions yet.
 hl.monitor({ output = "", mode = "preferred", position = "auto", scale = "1" })
 
--- Both desks keep the laptop panel off; only the mobile profile brings eDP-1
--- back. The home/office profiles disable it, so the re-enable must pass
--- disabled = false explicitly: a rule that only sets mode/position is treated
--- as identical to the active one and is never applied.
-local function laptop_on(position)
-    hl.monitor({ output = "eDP-1", mode = "1920x1200@60", position = position, scale = "1", disabled = false })
-end
-
--- The lid decides whether the laptop panel is on when docked (decision D2):
--- open = panel on, closed = panel off. Read it from the kernel because
--- Hyprland has no lid event, only the `switch:*:Lid Switch` binds.
-local LID_STATE_FILES = {
-    "/proc/acpi/button/lid/LID0/state",
-    "/proc/acpi/button/lid/LID1/state",
-    "/proc/acpi/button/lid/LID/state",
-}
-local function lid_closed()
-    for _, path in ipairs(LID_STATE_FILES) do
-        local f = io.open(path, "r")
-        if f then
-            local state = f:read("*a") or ""
-            f:close()
-            return state:find("closed", 1, true) ~= nil
-        end
-    end
-    return false -- no lid switch (desktop): behave as if open
-end
-
--- Docked: mirror the lid on eDP-1 and let Hyprland place the panel next to the
--- external layout.
-local function apply_lid_to_laptop_panel()
-    if lid_closed() then
-        hl.monitor({ output = "eDP-1", disabled = true })
-    else
-        hl.monitor({ output = "eDP-1", mode = "1920x1200@60", position = "auto", scale = "1", disabled = false })
-    end
-end
-
--- Office secondary: 34" 2560x1080 ultrawide, mounted vertically right of the
--- ASUS. Matched by EDID description, not port, because it sits on HDMI-A-1,
--- the same port the home OLED uses. It advertises a 4K mode that it only
--- downscales, so pin the native mode. transform = 3 (270°) matches how it is
--- physically mounted; 1 renders upside down. Rotated it is 1080x2560 logical; the
--- ASUS is shifted down 560 so their vertical centres line up.
-local OFFICE_VERTICAL = "LG Electronics LG ULTRAGEAR 0x00023FA3"
-
-local function apply_monitor_profile()
-    local monitors = hl.get_monitors()
-    local names, descs = {}, {}
-    for _, m in ipairs(monitors) do
-        names[m.name] = true
-        descs[m.description] = true
-    end
-
-    -- Office first: its ultrawide also occupies HDMI-A-1, which would
-    -- otherwise be mistaken for the home OLED.
-    if names["DP-1"] then
-        -- Office: 1440p main, optional vertical ultrawide on the right
-        if descs[OFFICE_VERTICAL] then
-            hl.monitor({ output = "DP-1", mode = "2560x1440@60", position = "0x560", scale = "1" })
-            hl.monitor({ output = "desc:" .. OFFICE_VERTICAL, mode = "2560x1080@144", position = "2560x0", scale = "1", transform = 3 })
-        else
-            hl.monitor({ output = "DP-1", mode = "2560x1440@60", position = "0x0", scale = "1" })
-        end
-    elseif names["HDMI-A-1"] then
-        -- Home: single 4K OLED
-        hl.monitor({ output = "HDMI-A-1", mode = "3840x2160@120", position = "0x0", scale = "1" })
-    else
-        -- Mobile: laptop only, whatever the lid says
-        laptop_on("0x0")
-        return
-    end
-    -- With an external attached, the lid owns the laptop panel.
-    apply_lid_to_laptop_panel()
-end
-
-apply_monitor_profile() -- re-apply on config reload, not just on hotplug/start
-
-hl.on("monitor.added", function() apply_monitor_profile() end)
-hl.on("monitor.removed", function() apply_monitor_profile() end)
 
 ---------------------
 ---- MY PROGRAMS ----
@@ -101,7 +26,6 @@ local ipc = "noctalia msg "
 -------------------
 
 hl.on("hyprland.start", function()
-    apply_monitor_profile()
     -- Noctalia and the Emacs daemon are systemd user units (systemd/ package),
     -- started with hyprland-session.target. nm-applet comes from XDG autostart,
     -- so none of them are exec'd here.
@@ -303,7 +227,13 @@ hl.bind(mainMod .. " + CTRL + 0", hl.dsp.workspace.move({ monitor = 0 }))
 hl.bind(mainMod .. " + CTRL + 1", hl.dsp.workspace.move({ monitor = 1 }))
 -- Office vertical ultrawide, by description: its numeric ID depends on what
 -- else is plugged in (eDP-1 keeps ID 0 even while disabled).
-hl.bind(mainMod .. " + CTRL + 2", hl.dsp.workspace.move({ monitor = "desc:" .. OFFICE_VERTICAL }))
+-- Office ultrawide (portrait). Matched by hardware description because it
+-- shares HDMI-A-1 with the home OLED. This is only the workspace-move target;
+-- the layout comes from hyprmoncfg. No "office" profile is committed yet, so the
+-- office desk resolves to the "mobile" profile and extra displays are extended
+-- to the right of the laptop panel.
+-- deferred: no office hyprmoncfg profile, capture it at the next office visit
+hl.bind(mainMod .. " + CTRL + 2", hl.dsp.workspace.move({ monitor = "desc:LG Electronics LG ULTRAGEAR 0x00023FA3" }))
 
 -- Move focus with mainMod + HJKL
 hl.bind(mainMod .. " + H", hl.dsp.focus({ direction = "left" }))
@@ -355,16 +285,13 @@ hl.bind("F13", hl.dsp.exec_cmd(ipc .. "mic-mute"), { locked = true })
 -- Lock screen
 hl.bind(mainMod .. " + CTRL + Q", hl.dsp.exec_cmd(ipc .. "session lock"))
 
--- Lid switch: re-apply the layout so eDP-1 follows the lid, then hand the
--- docked/undocked decision to power-policy.sh (docked = no-op, undocked = lock
--- and suspend). Hyprland exposes no lid event, only these binds.
+-- Lid switch: the monitor layout is hyprmoncfgd's job (it reads lid state via
+-- UPower and forces the internal panel off when docked). This bind only hands
+-- the docked/undocked power decision to power-policy.sh (docked = no-op,
+-- undocked = lock and suspend).
 local power_policy = os.getenv("HOME") .. "/.config/hypr/scripts/power-policy.sh"
 hl.bind("switch:on:Lid Switch", function()
-    apply_monitor_profile()
     hl.exec_cmd(power_policy .. " on")
-end, { locked = true })
-hl.bind("switch:off:Lid Switch", function()
-    apply_monitor_profile()
 end, { locked = true })
 
 --------------------------------
@@ -396,11 +323,12 @@ hl.layer_rule({
 
 -- Picture-in-Picture: small floating window pinned to the bottom-right corner.
 -- The class match keeps ordinary browser windows with a matching title tiled.
+-- Zen reports app.zen_browser.zen, not `zen`; chromium reports chromium-browser.
 hl.window_rule({
     name = "Picture in Picture",
     match = {
-        class = "^(firefox|chromium-browser|zen)$",
-        title = "^(Picture-in-Picture|Firefox|Picture in picture|Meet)$",
+        class = "^(firefox|chromium-browser|zen|app.zen_browser.zen)$",
+        title = "^(Picture-in-Picture|Picture in Picture|Firefox|Meet)$",
     },
     float = true,
     size = { 800, 450 },
@@ -451,3 +379,6 @@ hl.window_rule({
 -- Noctalia shell color overrides (sourced last to override border colors).
 -- The file is generated by Noctalia and not tracked, so a missing one just means default borders.
 pcall(require, "noctalia.noctalia-colors")
+
+-- Added by hyprmoncfg: its generated monitor rules load last, so nothing before this can override the applied layout.
+do local path = os.getenv("HOME") .. "/.config/hypr/hyprmoncfg-monitors.lua"; local file = io.open(path, "r"); if file then file:close(); dofile(path) end end

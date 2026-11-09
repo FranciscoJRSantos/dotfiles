@@ -1,0 +1,16 @@
+[Unit]
+Description=Hyprland monitor profile daemon (hyprmoncfgd)
+# Upstream ships WantedBy=default.target, which pulls the daemon in at
+# default.target instead of inside a graphical session. This copy ties it to
+# hyprland-session.target instead, matching the other desktop units in this repo.
+After=hyprland-session.target
+PartOf=hyprland-session.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/hyprmoncfgd
+Restart=on-failure
+RestartSec=2
+
+[Install]
+WantedBy=hyprland-session.target

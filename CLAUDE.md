@@ -8,7 +8,7 @@ Personal dotfiles managed with **GNU Stow**. Each top-level directory is a stow 
 
 **`fedora-files` is the live branch** and the only one that is maintained. It runs Hyprland with the Noctalia shell on Fedora. `main` (Sway, Alacritty, Rofi, Waybar) and `arch-files` (Arch + Waybar/Mako/Fuzzel) are archival history of earlier setups; do not clean or update them. Removed configs stay recoverable from those branches and from earlier `fedora-files` commits.
 
-Packages on this branch: `bin`, `doom`, `fish`, `ghostty`, `git`, `hyprland`, `hyprwhspr`, `mise`, `noctalia`, `nvim`, `portals`, `systemd`, `vscode`.
+Packages on this branch: `bin`, `doom`, `fish`, `ghostty`, `git`, `hyprland`, `hyprmoncfg`, `hyprwhspr`, `mise`, `noctalia`, `nvim`, `portals`, `systemd`, `vscode`.
 
 ## Stow Layout
 
@@ -36,8 +36,10 @@ Rule: a config stays only if the live Hyprland config, the shell config, or a bi
 ## Hyprland
 
 - `hyprland.lua` is the Lua config and must stay **self-contained**: it may not `require` a module that is not tracked. The Noctalia-generated `~/.config/hypr/noctalia/noctalia-colors.lua` (not tracked) is loaded with `pcall` so a missing file only means default borders.
+- Monitor layout is owned by **hyprmoncfg**, not by `hyprland.lua`. Profiles are hardware-keyed JSON in `hyprmoncfg/.config/hyprmoncfg/profiles/` (stow package `hyprmoncfg`); `hyprmoncfgd` (systemd unit in the `systemd` package, bound to `hyprland-session.target`) applies the best match on hotplug and lid changes. hyprmoncfg writes `~/.config/hypr/hyprmoncfg-monitors.lua` and loads it last from `hyprland.lua`; that generated file is **not tracked**. Unknown displays are extended to the right of the matching profile, so a new projector works without config. Capture a setup with `hyprmoncfg save <name>` or arrange it in `hyprmoncfg` (TUI). Committed profiles are `home` and `mobile`; there is no `office` profile yet, so the office desk falls back to `mobile` (laptop panel + extra displays extended right) until one is captured there.
+- `hyprland.lua` keeps only the catch-all `monitor` rule (covers the instant before the generated file loads) and the workspace-move binds. Do not reintroduce per-output monitor rules there: anything loaded after `hyprmoncfg-monitors.lua` overrides the applied profile, and `hyprmoncfg doctor` reports that.
 - `hypr/scripts/power-policy.sh` holds the docked/undocked policy: the lid switch calls it with `on` (docked: no-op; undocked: lock and suspend), and the Noctalia idle behavior calls it with `idle` at 15 min (docked: no-op; undocked: suspend, the screen is already locked). **Docked means AC online and the lid closed** — never monitor presence, because the home OLED disconnects when it powers off. `--dry-run` reports the decision, and `POWER_POLICY_AC_ONLINE` / `POWER_POLICY_LID_STATE` override the readings for testing.
-- The lid also owns the laptop panel when an external monitor is attached: `apply_monitor_profile()` reads `/proc/acpi/button/lid/*/state` and enables eDP-1 when the lid is open (Hyprland auto-places it after the external layout) or disables it when closed. Both `switch:on/off:Lid Switch` binds re-apply the profile; a laptop-only setup ignores the lid.
+- The lid switch bind no longer touches the layout: hyprmoncfgd reads lid state via UPower and forces the internal panel off when docked with an external output showing a picture.
 - Validate a config with `Hyprland --verify-config -c <file>`, but run it with a private runtime dir: `env -u HYPRLAND_INSTANCE_SIGNATURE -u WAYLAND_DISPLAY XDG_RUNTIME_DIR=$(mktemp -d) Hyprland --verify-config -c <file>` (the dir must be mode 700). Inside a live session it otherwise cannot bind its IPC socket and never evaluates the config. Success prints `config ok`.
 - `~/.config/hypr/hyprland.lua` is a symlink to the repo file and Hyprland may auto-reload when it changes.
 
