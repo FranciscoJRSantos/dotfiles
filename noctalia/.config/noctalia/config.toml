@@ -8,7 +8,7 @@ background_opacity = 0.93000000000000005
 capsule = true
 center = [ "audio_visualizer", "media" ]
 concave_edge_corners = false
-end = [ "clock", "tray", "network", "caffeine", "notifications", "battery", "session" ]
+end = [ "goodroot/noctwhspr:status", "clock", "tray", "network", "caffeine", "notifications", "battery", "session" ]
 margin_edge = 4
 margin_ends = 4
 margin_opposite_edge = 4
@@ -40,7 +40,7 @@ behavior_order = [ "lock", "screen-off", "lock-and-suspend" ]
     timeout = 630.0
 
 [plugins]
-enabled = [ "nzlov/daily-wallpaper" ]
+enabled = [ "nzlov/daily-wallpaper", "goodroot/noctwhspr" ]
 
 [shell]
 app_icon_colorize = true

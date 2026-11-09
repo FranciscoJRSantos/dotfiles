@@ -1,0 +1,9 @@
+{
+  "$schema": "https://raw.githubusercontent.com/goodroot/hyprwhspr/main/share/config.schema.json",
+  "external_bindings": true,
+  "recording_mode": "push_to_talk",
+  "model": "large-v3-turbo",
+  "inject_mode": "wtype",
+  "audio_ducking": true,
+  "whisper_prompt_pt": "Transcreve em português europeu, com pontuação e capitalização corretas."
+}

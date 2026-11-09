@@ -281,6 +281,13 @@ hl.bind(mainMod .. " + R", hl.dsp.exec_cmd(os.getenv("HOME") .. "/.local/bin/rea
 -- Stop the read that is currently playing.
 hl.bind(mainMod .. " + SHIFT + R", hl.dsp.exec_cmd(os.getenv("HOME") .. "/.local/bin/read-selection.sh --stop"))
 
+-- Dictation (hyprwhspr): press starts recording, release stops. Escape discards
+-- an accidental recording without transcribing. Absolute path because
+-- ~/.local/bin is not on Hyprland's exec PATH.
+hl.bind(mainMod .. " + M", hl.dsp.exec_cmd(os.getenv("HOME") .. "/.local/bin/dictation.sh start"))
+hl.bind(mainMod .. " + M", hl.dsp.exec_cmd(os.getenv("HOME") .. "/.local/bin/dictation.sh release"), { release = true })
+hl.bind(mainMod .. " + ESCAPE", hl.dsp.exec_cmd(os.getenv("HOME") .. "/.local/bin/dictation.sh cancel"))
+
 hl.bind(mainMod .. " + Q", hl.dsp.window.close())
 -- Session panel (lock, logout, reboot, shutdown) instead of an instant exit.
 hl.bind(mainMod .. " + SHIFT + M", hl.dsp.exec_cmd(ipc .. "panel-toggle session"))

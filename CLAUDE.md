@@ -8,7 +8,7 @@ Personal dotfiles managed with **GNU Stow**. Each top-level directory is a stow 
 
 **`fedora-files` is the live branch** and the only one that is maintained. It runs Hyprland with the Noctalia shell on Fedora. `main` (Sway, Alacritty, Rofi, Waybar) and `arch-files` (Arch + Waybar/Mako/Fuzzel) are archival history of earlier setups; do not clean or update them. Removed configs stay recoverable from those branches and from earlier `fedora-files` commits.
 
-Packages on this branch: `bin`, `doom`, `fish`, `ghostty`, `git`, `hyprland`, `mise`, `noctalia`, `nvim`, `portals`, `systemd`, `vscode`.
+Packages on this branch: `bin`, `doom`, `fish`, `ghostty`, `git`, `hyprland`, `hyprwhspr`, `mise`, `noctalia`, `nvim`, `portals`, `systemd`, `vscode`.
 
 ## Stow Layout
 
@@ -86,6 +86,32 @@ Add a tracked unit under `systemd/`, `stow -R systemd`, then
   `pt_BR` voice; there is no language detection.
 - Tests: `bash tests/read-selection.sh`. `tests/` is a plain directory, not a
   stow package.
+- **Dictation:** `bin/.local/bin/dictation.sh` maps Hyprland key events to
+  `hyprwhspr record start|release|cancel`. Bound to `Super+M` press and release
+  (`{ release = true }`) for push-to-talk, and `Super+Escape` to discard a
+  recording. hyprwhspr runs with `external_bindings = true`, so Hyprland owns the
+  keys and the service does not grab keyboards; a missing CLI or a failed start
+  raises a notification instead of failing silently.
+- **hyprwhspr:** installed as a managed release under `~/.local/share/hyprwhspr`
+  (not tracked; update with `hyprwhspr update`). Config is stowed from
+  `hyprwhspr/.config/hyprwhspr/config.json`: whisper.cpp via pywhispercpp with the
+  Vulkan wheel, model `large-v3-turbo`, `inject_mode: wtype`, auto language
+  detection for English and Portuguese, and `whisper_prompt_pt` nudging European
+  Portuguese. Models live in `~/.local/share/pywhispercpp/models` (untracked,
+  1.6 GB). The upstream dependency script does **not** install `wtype`; install it
+  separately. `vulkaninfo` (`vulkan-tools`) is what lets backend auto-detection
+  find the AMD iGPU — without it setup falls back to CPU faster-whisper.
+- **Noctalia widget:** `hyprwhspr noctalia install` installs `goodroot/noctwhspr`
+  and registers the mic-OSD theme template. The widget is placed in the tracked
+  Noctalia config: `goodroot/noctwhspr` in `[plugins] enabled` and
+  `goodroot/noctwhspr:status` in `bar.default.end`. Never track the plugin files
+  or the generated `templates/noctwhspr-mic-osd.css`.
+- Install (not tracked): `sudo dnf install wtype vulkan-tools`, then
+  `HYPRWHSPR_RELEASE_BOOTSTRAP=1 bash install.sh` and
+  `hyprwhspr setup auto --backend vulkan --model large-v3-turbo --hypr-bindings`.
+  Latency is ~3 s for a short utterance on the Vulkan backend (auto-detect
+  dominates); CPU faster-whisper was ~3x realtime and is the fallback.
+- Tests: `bash tests/dictation.sh`.
 
 ## Fish
 

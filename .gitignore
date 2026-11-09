@@ -7,3 +7,6 @@ fish/.config/fish/fish_variables
 fish/.config/fish/functions/
 fish/.config/fish/conf.d/
 fish/.config/fish/completions/
+
+# hyprwhspr installs this Noctalia theme template at runtime
+noctalia/.config/noctalia/templates/

@@ -45,6 +45,9 @@ esac'
 stub piper 'printf "%s\n" "$*" >"$OUT/piper.args"; cat >"$OUT/piper.stdin"'
 # shellcheck disable=SC2016
 stub paplay 'printf "%s\n" "$*" >>"$OUT/play.args"; cat >"$OUT/play.stdin"'
+# Tests must never raise real desktop notifications.
+# shellcheck disable=SC2016
+stub notify-send 'printf "%s\n" "$*" >>"$OUT/notify"'
 # shellcheck disable=SC2016
 stub curl 'n=$(($(cat "$OUT/curl.count" 2>/dev/null || echo 0) + 1))
 printf "%s\n" "$n" >"$OUT/curl.count"
