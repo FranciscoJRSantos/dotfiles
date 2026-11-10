@@ -10,3 +10,8 @@ fish/.config/fish/completions/
 
 # hyprwhspr installs this Noctalia theme template at runtime
 noctalia/.config/noctalia/templates/
+
+# Noctalia renders these from its current palette (built-in "emacs" and
+# "ghostty" templates); they are regenerated whenever the scheme changes
+doom/.config/doom/themes/noctalia-theme.el
+ghostty/.config/ghostty/themes/noctalia

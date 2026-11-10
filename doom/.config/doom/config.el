@@ -2,8 +2,23 @@
 
 (setq doom-font (font-spec :family "Fira Code" :size 18 :weight 'semi-light))
 
-;; No doom-theme on purpose: auto-dark owns loading catppuccin, otherwise the
-;; theme is applied twice on every startup (doom-theme, then auto-dark's reload).
+;; No doom-theme on purpose: auto-dark owns loading the theme, otherwise it is
+;; applied twice on every startup (doom-theme, then auto-dark's reload).
+
+;; Theme: Noctalia renders `themes/noctalia-theme.el` from its current palette
+;; (the built-in "emacs" template, enabled in Noctalia's settings). The file is
+;; rewritten on every scheme change, so it is generated output and stays out of
+;; the repo; only this wiring is tracked. auto-dark's hooks re-read the file so
+;; a light/dark switch picks up the freshly rendered colours.
+(add-to-list 'custom-theme-load-path (expand-file-name "themes" doom-user-dir))
+
+(defun +noctalia-apply-theme ()
+  "Re-read the Noctalia-rendered theme file and apply it."
+  (interactive)
+  (let ((file (expand-file-name "themes/noctalia-theme.el" doom-user-dir)))
+    (when (file-exists-p file)
+      (load-file file)
+      (load-theme 'noctalia t))))
 
 ;; Disable projectile caching
 (setq projectile-enable-caching nil)
@@ -18,22 +33,15 @@
 (use-package auto-dark
   :config
   (setq custom-safe-themes t)
-  (setq auto-dark-themes '((catppuccin) (catppuccin)))
-  (add-hook 'auto-dark-dark-mode-hook
-            (lambda ()
-              (unless (eq catppuccin-flavor 'mocha)
-                (setq catppuccin-flavor 'mocha)
-                (catppuccin-reload))))
-  (add-hook 'auto-dark-light-mode-hook
-            (lambda ()
-              (unless (eq catppuccin-flavor 'latte)
-                (setq catppuccin-flavor 'latte)
-                (catppuccin-reload))))
+  (setq auto-dark-themes '((noctalia) (noctalia)))
+  (add-hook 'auto-dark-dark-mode-hook #'+noctalia-apply-theme)
+  (add-hook 'auto-dark-light-mode-hook #'+noctalia-apply-theme)
   ;; Under the daemon there is no frame when config.el loads; auto-dark's
   ;; README recommends (re)applying it once the first frame exists.
   (add-hook 'server-after-make-frame-hook
             (lambda () (auto-dark-mode 1)))
-  (auto-dark-mode 1))
+  (auto-dark-mode 1)
+  (+noctalia-apply-theme))
 
 ;; Python: ty is the LSP (completion, hover, go-to-definition). ruff only
 ;; formats, through apheleia below.
