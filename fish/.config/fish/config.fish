@@ -17,4 +17,11 @@ if status is-interactive
     fzf --fish | source
     zoxide init fish --cmd cd | source
     direnv hook fish | source
+
+    ### Sandboxed OpenCode
+    # Launch OpenCode inside a nono sandbox (credential isolation, network allowlist).
+    # Plain `opencode` remains unsandboxed for system admin tasks (dotfiles, monitors, etc.).
+    function sandbox
+        nono run --profile opencode-sandbox -- opencode --standalone $argv
+    end
 end
