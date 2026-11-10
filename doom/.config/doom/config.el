@@ -11,7 +11,7 @@
 
 (setq display-line-numbers-type t)
 
-(setq org-directory "~/Documents/notes")
+(setq org-directory "~/Documents/kb-work")
 
 (setq-default cursor-type 'bar)
 
