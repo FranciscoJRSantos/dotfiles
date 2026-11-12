@@ -151,7 +151,7 @@ kanata owns `a s d f / j k l ;` only.
 - `make -C ~/backups backup|prune|list|check|stats|init|restore|mount`. The default goal is the read-only `list`. `restore` writes to `~/restic-restore` and `mount` to `~/mnt/backups`, so no target writes into `~/backups` (a stow link into this repo).
 - Credentials are 1Password references inside the Makefile (`op://Private/restic-r2/{repository,access_key_id,secret_access_key,password}`); `op run --no-masking` resolves them for restic only. Nothing secret lives on disk or in this public repo. Another vault: `make OP_ITEM=op://<vault>/restic-r2 ...`.
 - `excludes.txt` drops regenerable caches, toolchains, dependency directories, the AIH DuckDB files and `*.sql*` dumps (a deliberate choice); `.git`, `.config`, `.ssh`, `Documents` and the agent databases stay. Patterns without a leading `/` match the end of any path **and any ancestor**, so a fixture under `/tmp/tmp.XXXX` is excluded whole by `**/tmp/*`.
-- `prune` keeps the last 7 days with snapshots plus anything tagged `archive` (`--keep-tag archive`); a failed `backup` never reaches `prune`.
+- `prune` keeps everything from the last 30 days, the newest snapshot and anything tagged `archive` (`--keep-within 30d --keep-last 1 --keep-tag archive`); a failed `backup` never reaches `prune`. Backups are manual (`op` needs the 1Password desktop approval); `restic tag` gives a snapshot a new ID.
 - Stow: a real `~/backups/Makefile` makes stow abort, so move it aside first, then `stow -n -v -R -t $HOME backups`.
 - Tests: `bash tests/backups.sh` runs the real recipes against a throwaway local restic repository in `/dev/shm`, never R2.
 

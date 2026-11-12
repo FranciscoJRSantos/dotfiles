@@ -41,9 +41,9 @@ init:
 backup:
 	$(RESTIC) backup $(BACKUP_PATH) --exclude-caches --exclude-file=$(EXCLUDES)
 
-# deferred: keep-daily only, as the old Makefile did; add --keep-weekly/--keep-monthly if older history is wanted
+# A real-time window, not keep-daily/weekly: those count periods that HAVE snapshots, so manual runs stretch them over months.
 prune:
-	$(RESTIC) forget --keep-tag archive --keep-daily 7 --prune
+	$(RESTIC) forget --keep-within 30d --keep-last 1 --keep-tag archive --prune
 
 list:
 	$(RESTIC) snapshots

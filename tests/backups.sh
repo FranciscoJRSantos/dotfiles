@@ -132,24 +132,24 @@ for p in "${dropped[@]}"; do
     assert_absent "excludes $p" "$home/$p" "$listing"
 done
 
-# --- retention: `make prune` keeps 7 days and anything tagged `archive` ------
+# --- retention: `make prune` keeps 30 days, the newest snapshot and `archive` -
 
 ret=$work/ret
 mkdir -p "$ret"
 printf 'x' >"$ret/file"
-restic backup "$ret" --time '2025-06-01 12:00:00' --tag archive >/dev/null 2>&1
-for d in 01 02 03 04 05 06 07 08 09; do
-    restic backup "$ret" --time "2026-01-$d 12:00:00" >/dev/null 2>&1
+restic backup "$ret" --time "$(date -d '400 days ago' '+%F 12:00:00')" --tag archive >/dev/null 2>&1
+for age in 2 5 10 45 90; do
+    restic backup "$ret" --time "$(date -d "$age days ago" '+%F 12:00:00')" >/dev/null 2>&1
 done
 count() { restic snapshots --json --path "$ret" "$@" 2>/dev/null | grep -o '"short_id"' | wc -l; }
-assert_eq "fixture has 10 snapshots before prune" '10' "$(count)"
+assert_eq "fixture has 6 snapshots before prune" '6' "$(count)"
 
 if mk prune; then
     ok "prune succeeds"
 else
     nok "prune succeeds" "$(make_log_tail)"
 fi
-assert_eq "prune keeps 7 dailies plus the archive snapshot" '8' "$(count)"
+assert_eq "prune keeps the 3 snapshots within 30 days plus the archive one" '4' "$(count)"
 assert_eq "the archive-tagged snapshot survives prune" '1' "$(count --tag archive)"
 
 # --- summary ---------------------------------------------------------------
