@@ -1,8 +1,33 @@
+# Single source of truth for development tools: runtimes and dev CLIs.
+# `mise install` on a new machine installs all of it; `mise up` upgrades.
+#
+# dnf keeps what the session or shell needs before mise loads, or what
+# Hyprland/systemd launch: fd, rg, fzf, zoxide, direnv, jq, bat, yazi, kanata,
+# docker, restic, stow, op. uv tools stay for apps (piper-tts, personal-agents).
+# Project-only tools (terraform, tflint) belong in that project's mise.toml.
+
 [tools]
+# --- runtimes ---
 node = "24"
 python = "3.14"
 rust = "1.93"
+
+# --- dev CLIs ---
+uv = "latest"
+ruff = "latest"
+ty = "latest"
+gh = "latest"
+glab = "latest"
+just = "latest"
+yq = "latest"
+shellcheck = "latest"
+duckdb = "1.5"         # match the 1.5.x Python lib the AIH projects use; bump together
+aws-cli = "latest"
+pre-commit = "latest"
 usage = "latest"
+"pipx:sqlfluff" = "latest"
+"pipx:yamllint" = "latest"
+"pipx:diff-cover" = "latest"
 
 [settings]
 idiomatic_version_file_enable_tools = ["ruby"]
