@@ -1,0 +1,18 @@
+[Unit]
+Description=Kanata keyboard remapper (home-row mods)
+Documentation=https://github.com/jtroo/kanata
+# Reads /dev/input/event* and writes /dev/uinput. Fedora defaults /dev/uinput
+# to root:root 0600, so this needs two untracked host steps:
+#   /etc/modules-load.d/uinput.conf with "uinput"
+#   a udev rule: KERNEL=="uinput", GROUP="input", MODE="0660"
+# With those, the `input` group is the only privilege required.
+
+[Service]
+ExecStart=/usr/bin/kanata --cfg %h/.config/kanata/kanata.kbd
+# A dead kanata releases the grabbed devices, so the keyboard keeps working
+# unmodified; restart brings the mods back without a re-login.
+Restart=on-failure
+RestartSec=2
+
+[Install]
+WantedBy=default.target

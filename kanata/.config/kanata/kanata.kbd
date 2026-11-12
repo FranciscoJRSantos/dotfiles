@@ -1,0 +1,65 @@
+;; Home-row modifiers at the OS level, for every keyboard this machine sees.
+;;
+;; The rule that keeps this usable: a same-hand key pressed while a home-row key
+;; is held resolves as the typed letter, and an opposite-hand key pressed and
+;; released resolves the hold early. That is the failure mode (typing rolls
+;; becoming accidental modifiers) that makes home-row mods painful, handled
+;; explicitly instead of left to a bare tap-hold timeout.
+;;
+;; Do not also enable home-row mods in UHK Agent: firmware mods and these stack
+;; into double-modifier garbage that no timing can fix. Keep navigation/layer
+;; work in the firmware and mod-taps here.
+;;
+;; Tuning knobs, in the order you are likely to need them:
+;;
+;;   hold-time
+;;     How long a held key waits before becoming a modifier, and how much
+;;     latency a modifier shortcut carries. Raise it if "a then c" types "ac"
+;;     when you meant Super+C; lower it if shortcuts feel sluggish.
+;;
+;;   tap-time
+;;     Re-press window: tap a key twice within this and the second press is
+;;     treated as a held tap, so holding down to repeat still works.
+;;
+;;   left-hand-keys / right-hand-keys
+;;     The key lists are what make same-hand rolls resolve as taps. They must
+;;     contain every key that can be pressed during ordinary typing.
+;;
+;; After editing: kanata --check -c ~/.config/kanata/kanata.kbd
+;;                systemctl --user restart kanata
+
+(defcfg
+  process-unmapped-keys yes
+)
+
+(defvar
+  tap-time 200
+  hold-time 190
+  left-hand-keys (q w e r t a s d f g z x c v b)
+  right-hand-keys (y u i o p h j k l ; n m , . /)
+)
+
+;; Only this block is remapped. Mods, Space, Enter, digits, Tab and the
+;; function row are not in defsrc and pass through via process-unmapped-keys.
+(defsrc
+  q   w   e   r   t   y   u   i   o   p
+  a   s   d   f   g   h   j   k   l   ;
+  z   x   c   v   b   n   m   ,   .   /
+)
+
+(defalias
+  a (tap-hold-release-keys $tap-time $hold-time a lmet $left-hand-keys)
+  s (tap-hold-release-keys $tap-time $hold-time s lalt $left-hand-keys)
+  d (tap-hold-release-keys $tap-time $hold-time d lctl $left-hand-keys)
+  f (tap-hold-release-keys $tap-time $hold-time f lsft $left-hand-keys)
+  j (tap-hold-release-keys $tap-time $hold-time j rsft $right-hand-keys)
+  k (tap-hold-release-keys $tap-time $hold-time k rctl $right-hand-keys)
+  l (tap-hold-release-keys $tap-time $hold-time l ralt $right-hand-keys)
+  ; (tap-hold-release-keys $tap-time $hold-time ; rmet $right-hand-keys)
+)
+
+(deflayer base
+  q   w   e   r   t   y   u   i   o   p
+  @a  @s  @d  @f  g   h  @j  @k  @l  @;
+  z   x   c   v   b   n   m   ,   .   /
+)

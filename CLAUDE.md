@@ -8,7 +8,7 @@ Personal dotfiles managed with **GNU Stow**. Each top-level directory is a stow 
 
 **`fedora-files` is the live branch** and the only one that is maintained. It runs Hyprland with the Noctalia shell on Fedora. `main` (Sway, Alacritty, Rofi, Waybar) and `arch-files` (Arch + Waybar/Mako/Fuzzel) are archival history of earlier setups; do not clean or update them. Removed configs stay recoverable from those branches and from earlier `fedora-files` commits.
 
-Packages on this branch: `bin`, `doom`, `fish`, `ghostty`, `git`, `hyprland`, `hyprmoncfg`, `hyprwhspr`, `mise`, `noctalia`, `nvim`, `portals`, `systemd`, `vscode`.
+Packages on this branch: `bin`, `doom`, `fish`, `ghostty`, `git`, `hyprland`, `hyprmoncfg`, `hyprwhspr`, `kanata`, `mise`, `noctalia`, `nvim`, `portals`, `systemd`, `vscode`.
 
 ## Stow Layout
 
@@ -54,14 +54,43 @@ Rule: a config stays only if the live Hyprland config, the shell config, or a bi
 Session processes are systemd user units in `systemd/`, enabled with
 `WantedBy=hyprland-session.target` and started with the session (at boot with
 autologin, otherwise at login): `noctalia.service`, `emacs.service`,
-`nm-applet.service` and `1password.service`. `piper-tts.service` is the
-exception — it is a background service on `default.target`.
+`nm-applet.service` and `1password.service`. `piper-tts.service` and
+`kanata.service` are the exceptions — they are background services on
+`default.target`.
 
 This session does **not** start `xdg-desktop-autostart.target`, so entries in
 `~/.config/autostart` (including the one 1Password writes itself) do nothing.
 Add a tracked unit under `systemd/`, `stow -R systemd`, then
 `systemctl --user enable <unit>`; the enable symlink lives in
 `~/.config/systemd/user/hyprland-session.target.wants/` and is not tracked.
+
+## Keyboard
+
+Home-row mods are done here, not in UHK Agent: firmware mod-taps and OS
+mod-taps stack into double-modifier garbage. The UHK keeps layout/nav layers;
+kanata owns `a s d f / j k l ;` only.
+
+- `kanata/.config/kanata/kanata.kbd` is the config; `kanata.service` (in
+  `systemd/`) runs it on `default.target` as the normal user. Three untracked
+  host steps are required, because Fedora's `/dev/uinput` is `root:root 0600`
+  and the module is not loaded at boot:
+  `usermod -aG input $USER` (then a full re-login — a `systemctl --user`
+  reexec does not pick up new groups), `/etc/modules-load.d/uinput.conf`
+  containing `uinput`, and a udev rule
+  `KERNEL=="uinput", GROUP="input", MODE="0660"`. hyprwhspr ships that same
+  rule as `99-hyprwhspr-uinput.rules`; without the module entry the device
+  never appears at boot and kanata dies with `Permission denied (os error 13)`
+  in a restart loop.
+- `tap-hold-release-keys` with explicit per-hand key lists is what keeps
+  typing safe: a same-hand key during a hold resolves as a tap, an
+  opposite-hand press+release resolves the modifier early. The lists must
+  cover every key used while typing or the protection has holes.
+- Terra ships kanata 1.11.0. `defhands`, `tap-hold-opposite-hand` and the
+  `tap-hold-require-prior-idle` defcfg option are 1.12+ and will fail
+  `--check` on this version.
+- Validate before restarting: `kanata --check -c ~/.config/kanata/kanata.kbd`,
+  then `systemctl --user restart kanata`. A dead kanata releases the grabbed
+  devices, so losing it costs the mods, not the keyboard.
 
 ## Speech
 
