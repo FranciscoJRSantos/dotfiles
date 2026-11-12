@@ -30,6 +30,14 @@
 
 (setq-default cursor-type 'bar)
 
+;; mise shims first: the daemon's PATH is Doom's env snapshot, frozen at the
+;; last `doom env' and blind to per-project versions. A shim resolves the tool
+;; for the directory it runs in, so ruby-lsp, rake and node follow each
+;; project's mise.toml / .ruby-version with no .envrc.
+(let ((shims (expand-file-name "~/.local/share/mise/shims")))
+  (add-to-list 'exec-path shims)
+  (setenv "PATH" (concat shims path-separator (getenv "PATH"))))
+
 (use-package auto-dark
   :config
   (setq custom-safe-themes t)
