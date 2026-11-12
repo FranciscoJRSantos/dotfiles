@@ -64,3 +64,21 @@
   ;; Skip COMMENT-tagged and DONE headings
   (setq org-tree-slide-skip-comments t)
   (setq org-tree-slide-skip-done t))
+
+;; diff-review: PR-style review of a branch (`M-x diff-review-branch', or `d v'
+;; in Magit's diff menu). The review is JSON under .git/review/, never committed,
+;; so agents can leave comments in it with jq. Everything else is under the
+;; package's `C-c _' prefix; the README's other Evil keys clash with
+;; evil-nerd-commenter (gc), fold (zf, zd) and evil-lion (gl).
+(use-package! diff-review
+  :defer t
+  :hook ((diff-review-mode diff-review-sidebar-mode) . hl-line-mode)
+  :init
+  (after! magit (diff-review-magit-mode))
+  :config
+  ;; Same muscle memory as Doom's ]d/[d (git hunks) and ]c/[c (comments).
+  (map! :map diff-review-file-mode-map
+        :n "]d" #'diff-review-next-hunk
+        :n "[d" #'diff-review-previous-hunk
+        :n "]c" #'diff-review-next-comment
+        :n "[c" #'diff-review-previous-comment))
