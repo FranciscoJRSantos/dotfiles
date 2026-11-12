@@ -1,0 +1,70 @@
+#!/bin/sh
+# sandbox-opencode: Launch OpenCode TUI connected to a sandboxed server.
+# Starts the server on a fixed port, waits for it, then connects the TUI.
+# Usage: sandbox-opencode [opencode args...]
+
+set -e
+
+PORT="${OPENCODE_SANDBOX_PORT:-4096}"
+PROFILE="opencode-sandbox"
+SERVER_URL="http://127.0.0.1:$PORT"
+LOG_FILE="/tmp/opencode-sandbox-server.log"
+SERVER_PID=""
+
+cleanup() {
+  if [ -n "$SERVER_PID" ] && kill -0 "$SERVER_PID" 2>/dev/null; then
+    kill "$SERVER_PID" 2>/dev/null
+    wait "$SERVER_PID" 2>/dev/null || true
+  fi
+}
+trap cleanup EXIT
+
+# Kill any existing server on the target port
+if curl -sf "$SERVER_URL/" >/dev/null 2>&1; then
+  echo "Stopping existing server on port $PORT..."
+  # Find and kill the process listening on this port
+  fuser -k "$PORT/tcp" 2>/dev/null || true
+  sleep 1
+fi
+
+# Start server in background inside sandbox
+nono run --profile "$PROFILE" --silent --allow-cwd -- opencode serve --port "$PORT" --hostname 127.0.0.1 > "$LOG_FILE" 2>&1 &
+SERVER_PID=$!
+
+# Poll for readiness (up to 15 seconds)
+TRIES=0
+MAX_TRIES=30
+while [ "$TRIES" -lt "$MAX_TRIES" ]; do
+  if curl -sf "$SERVER_URL/" >/dev/null 2>&1; then
+    break
+  fi
+  # Check if server process died
+  if ! kill -0 "$SERVER_PID" 2>/dev/null; then
+    echo "sandbox: server process exited unexpectedly. Log:" >&2
+    cat "$LOG_FILE" >&2
+    exit 1
+  fi
+  TRIES=$((TRIES + 1))
+  sleep 0.5
+done
+
+if [ "$TRIES" -ge "$MAX_TRIES" ]; then
+  echo "sandbox: server did not become ready after 15s on port $PORT" >&2
+  echo "Last log output:" >&2
+  tail -20 "$LOG_FILE" >&2
+  exit 1
+fi
+
+# Extract password from server log
+# The server prints: "server password <password>"
+export OPENCODE_PASSWORD=$(grep "server password" "$LOG_FILE" | awk '{print $3}')
+
+if [ -z "$OPENCODE_PASSWORD" ]; then
+  echo "sandbox: could not extract password from server log" >&2
+  echo "Log contents:" >&2
+  cat "$LOG_FILE" >&2
+  exit 1
+fi
+
+# Connect TUI inside sandbox with the captured password
+exec nono run --profile "$PROFILE" --allow-cwd -- opencode --server "$SERVER_URL" "$@"

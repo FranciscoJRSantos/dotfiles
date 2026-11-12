@@ -21,7 +21,10 @@ if status is-interactive
     ### Sandboxed OpenCode
     # Launch OpenCode inside a nono sandbox (credential isolation, network allowlist).
     # Plain `opencode` remains unsandboxed for system admin tasks (dotfiles, monitors, etc.).
+    #
+    # Note: --standalone mode uses port 0 (random port) which is blocked by nono on Linux.
+    # The sandbox-opencode script starts the server explicitly on port 4096, then connects the TUI to it.
     function sandbox
-        nono run --profile opencode-sandbox -- opencode --standalone $argv
+        sandbox-opencode $argv
     end
 end
