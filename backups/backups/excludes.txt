@@ -1,0 +1,52 @@
+# Patterns for `restic backup --exclude-file` (see `make backup`).
+# Matched against absolute paths. A pattern without a leading / matches the end
+# of any path, so `.cache` is every .cache directory and `.local/share/Trash` is
+# that folder under any home. Regenerable or duplicated data stays out, so a
+# snapshot is a few tens of GB instead of ~300 GB. All of `.git`, `.config`,
+# `.ssh`, `Documents` and the agent databases are kept.
+
+# --- regenerable caches and toolchains (whole folders) ---
+.cache
+.npm
+.ollama
+.rustup
+.cargo
+.minikube
+.duckdb
+.bun
+.vscode/extensions
+.var/app/*/cache
+.local/share/Trash
+.local/share/mise
+.local/share/uv
+.local/share/gem
+.local/share/claude
+.local/share/GitKrakenCLI
+.local/share/piper
+.local/state
+
+# --- build and dependency directories, anywhere ---
+**/node_modules
+**/.venv
+**/venv
+**/__pycache__
+**/*.pyc
+**/.ruff_cache
+**/.pytest_cache
+**/.mypy_cache
+**/.terraform
+**/.direnv
+**/.nix-shell
+**/_opam
+**/_build
+**/vendor/bundle
+**/tmp/*
+**/log/*
+
+# --- data with a copy elsewhere ---
+# AIH DuckDB files and Dagster run history; the source of truth is S3.
+Documents/projects/AIH/**/*.db
+
+# --- deliberately not backed up ---
+# Database dumps, left out on purpose (confirmed 2026-11-08).
+**/*.sql*

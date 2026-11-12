@@ -8,7 +8,7 @@ Personal dotfiles managed with **GNU Stow**. Each top-level directory is a stow 
 
 **`fedora-files` is the live branch** and the only one that is maintained. It runs Hyprland with the Noctalia shell on Fedora. `main` (Sway, Alacritty, Rofi, Waybar) and `arch-files` (Arch + Waybar/Mako/Fuzzel) are archival history of earlier setups; do not clean or update them. Removed configs stay recoverable from those branches and from earlier `fedora-files` commits.
 
-Packages on this branch: `bin`, `doom`, `fish`, `ghostty`, `git`, `hyprland`, `hyprmoncfg`, `hyprwhspr`, `kanata`, `mise`, `noctalia`, `nvim`, `portals`, `systemd`, `vscode`.
+Packages on this branch: `backups`, `bin`, `doom`, `fish`, `ghostty`, `git`, `hyprland`, `hyprmoncfg`, `hyprwhspr`, `kanata`, `mise`, `noctalia`, `nvim`, `portals`, `systemd`, `vscode`.
 
 ## Stow Layout
 
@@ -143,6 +143,17 @@ kanata owns `a s d f / j k l ;` only.
   Latency is ~3 s for a short utterance on the Vulkan backend (auto-detect
   dominates); CPU faster-whisper was ~3x realtime and is the fallback.
 - Tests: `bash tests/dictation.sh`.
+
+## Backups
+
+`backups/backups/` is a stow package that installs to `~/backups/` (not under `.config`): a Makefile and `excludes.txt`, no credentials. Restic backs `$HOME` up to a Cloudflare R2 bucket.
+
+- `make -C ~/backups backup|prune|list|check|stats|init|restore|mount`. The default goal is the read-only `list`. `restore` writes to `~/restic-restore` and `mount` to `~/mnt/backups`, so no target writes into `~/backups` (a stow link into this repo).
+- Credentials are 1Password references inside the Makefile (`op://Private/restic-r2/{repository,access_key_id,secret_access_key,password}`); `op run --no-masking` resolves them for restic only. Nothing secret lives on disk or in this public repo. Another vault: `make OP_ITEM=op://<vault>/restic-r2 ...`.
+- `excludes.txt` drops regenerable caches, toolchains, dependency directories, the AIH DuckDB files and `*.sql*` dumps (a deliberate choice); `.git`, `.config`, `.ssh`, `Documents` and the agent databases stay. Patterns without a leading `/` match the end of any path **and any ancestor**, so a fixture under `/tmp/tmp.XXXX` is excluded whole by `**/tmp/*`.
+- `prune` keeps the last 7 days with snapshots plus anything tagged `archive` (`--keep-tag archive`); a failed `backup` never reaches `prune`.
+- Stow: a real `~/backups/Makefile` makes stow abort, so move it aside first, then `stow -n -v -R -t $HOME backups`.
+- Tests: `bash tests/backups.sh` runs the real recipes against a throwaway local restic repository in `/dev/shm`, never R2.
 
 ## Fish
 
