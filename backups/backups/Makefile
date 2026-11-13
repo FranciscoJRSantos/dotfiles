@@ -8,6 +8,7 @@
 #   make init      create the repository (once)
 #   make restore   restore the latest snapshot into $(RESTORE_DIR)
 #   make mount     browse every snapshot through FUSE until Ctrl-C
+#   make creds     store the credentials for the daily timer (run-unattended.sh)
 #
 # No credentials live on disk. The four values below are 1Password references
 # (item `restic-r2` with fields repository, access_key_id, secret_access_key and
@@ -17,7 +18,8 @@
 # tests/backups.sh points the same recipes at a throwaway local repository with
 # `make RESTIC=restic`, so the excludes and the retention are exercised for real.
 #
-# deferred: manual runs only, op needs the 1Password desktop approval; a timer needs systemd-creds (TPM2 works here), see git history of this file
+# Interactive runs use op (1Password desktop approval). The daily timer cannot be approved by
+# hand, so it reads systemd-creds copies instead (make creds, run-unattended.sh).
 
 here        := $(dir $(abspath $(firstword $(MAKEFILE_LIST))))
 OP_ITEM     ?= op://Private/restic-r2
@@ -32,8 +34,12 @@ RESTIC      ?= env \
     RESTIC_PASSWORD=$(OP_ITEM)/password \
     op run --no-masking -- restic
 
+SHELL       := bash
+OP          ?= op
+CRED_DIR    ?= $(HOME)/.config/credstore.encrypted
+
 .DEFAULT_GOAL := list
-.PHONY: init backup prune list check stats restore mount
+.PHONY: init backup prune list check stats restore mount creds
 
 init:
 	$(RESTIC) init
@@ -58,6 +64,19 @@ stats:
 restore:
 	mkdir -p $(RESTORE_DIR)
 	$(RESTIC) restore latest --target $(RESTORE_DIR) --verbose
+
+# Copy the four 1Password fields into systemd user credentials (encrypted, bound to this
+# machine and user) for the timer's unattended runs, see run-unattended.sh. Rerun it after
+# rotating the R2 token or reinstalling. Values go through a pipe, never a command line.
+creds:
+	@set -eo pipefail; umask 077; mkdir -p $(CRED_DIR); \
+	for pair in restic-repository:repository aws-access-key-id:access_key_id \
+	    aws-secret-access-key:secret_access_key restic-password:password; do \
+	    name=$${pair%%:*}; field=$${pair#*:}; \
+	    $(OP) read --no-newline "$(OP_ITEM)/$$field" \
+	        | systemd-creds --user encrypt --name="$$name" - "$(CRED_DIR)/$$name"; \
+	    echo "stored $$name"; \
+	done
 
 # -rmdir, never rm -rf: a mountpoint that is still busy must not be emptied.
 mount:

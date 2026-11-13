@@ -1,0 +1,6 @@
+[Unit]
+Description=Tell the user the backup failed
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/notify-send --urgency=critical --app-name=backup "Backup failed" "Details: journalctl --user -u backup.service"

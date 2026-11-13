@@ -1,0 +1,21 @@
+[Unit]
+Description=Restic backup of $HOME to Cloudflare R2
+Documentation=file:%h/backups/Makefile
+OnFailure=backup-failed.service
+# Retry a failed run (laptop just woke, no network yet) four times, then notify.
+StartLimitIntervalSec=6h
+StartLimitBurst=4
+
+[Service]
+Type=oneshot
+# Written once by `make -C ~/backups creds`; decrypted into $CREDENTIALS_DIRECTORY at start.
+LoadCredentialEncrypted=restic-repository:%h/.config/credstore.encrypted/restic-repository
+LoadCredentialEncrypted=aws-access-key-id:%h/.config/credstore.encrypted/aws-access-key-id
+LoadCredentialEncrypted=aws-secret-access-key:%h/.config/credstore.encrypted/aws-secret-access-key
+LoadCredentialEncrypted=restic-password:%h/.config/credstore.encrypted/restic-password
+ExecStart=%h/backups/run-unattended.sh
+Nice=10
+IOSchedulingClass=idle
+TimeoutStartSec=8h
+Restart=on-failure
+RestartSec=15min

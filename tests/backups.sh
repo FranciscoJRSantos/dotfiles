@@ -9,7 +9,7 @@ set -uo pipefail
 repo=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
 pkg=$repo/backups/backups
 
-for f in Makefile excludes.txt; do
+for f in Makefile excludes.txt run-unattended.sh; do
     if [[ ! -f $pkg/$f ]]; then
         echo "FAIL $pkg/$f is missing" >&2
         exit 1
@@ -151,6 +151,51 @@ else
 fi
 assert_eq "prune keeps the 3 snapshots within 30 days plus the archive one" '4' "$(count)"
 assert_eq "the archive-tagged snapshot survives prune" '1' "$(count --tag archive)"
+
+# --- unattended runs: `make creds` stores encrypted credentials, the runner uses them
+
+mkdir -p "$work/stubs"
+cat >"$work/stubs/op" <<'EOF'
+#!/usr/bin/env bash
+# Stand-in for `op read --no-newline <ref>`: prints a value derived from the field name.
+ref=${*: -1}
+printf 'val-%s' "${ref##*/}"
+EOF
+chmod +x "$work/stubs/op"
+
+if mk creds OP="$work/stubs/op" CRED_DIR="$work/creds"; then
+    ok "make creds stores the four credentials"
+else
+    nok "make creds stores the four credentials" "$(make_log_tail)"
+fi
+for pair in restic-repository:repository aws-access-key-id:access_key_id \
+    aws-secret-access-key:secret_access_key restic-password:password; do
+    name=${pair%%:*}
+    field=${pair#*:}
+    assert_eq "creds roundtrip: $name" "val-$field" \
+        "$(systemd-creds --user decrypt --name="$name" "$work/creds/$name" - 2>&1)"
+    assert_absent "creds file $name holds no plaintext" "val-$field" \
+        "$(cat "$work/creds/$name" 2>/dev/null)"
+done
+assert_eq "creds files are private" '600' "$(stat -c %a "$work/creds/restic-password" 2>/dev/null)"
+
+# What systemd hands the service after LoadCredentialEncrypted=: plain files in a directory.
+creddir=$work/credsdir
+mkdir -p "$creddir"
+printf '%s' "$work/repo2" >"$creddir/restic-repository"
+printf 'pw2' >"$creddir/restic-password"
+printf 'x' >"$creddir/aws-access-key-id"
+printf 'x' >"$creddir/aws-secret-access-key"
+RESTIC_REPOSITORY=$work/repo2 RESTIC_PASSWORD=pw2 restic init >/dev/null 2>&1
+if CREDENTIALS_DIRECTORY=$creddir BACKUP_PATH=$home bash "$pkg/run-unattended.sh" >>"$work/make.log" 2>&1; then
+    ok "the runner backs up and prunes with systemd-provided credentials"
+else
+    nok "the runner backs up and prunes with systemd-provided credentials" "$(make_log_tail)"
+fi
+assert_eq "the runner wrote to the repository named in the credential files" '1' \
+    "$(RESTIC_REPOSITORY=$work/repo2 RESTIC_PASSWORD=pw2 restic snapshots --json 2>/dev/null | grep -o '"short_id"' | wc -l)"
+env -u CREDENTIALS_DIRECTORY bash "$pkg/run-unattended.sh" >/dev/null 2>&1
+assert_eq "the runner refuses to run outside systemd" '1' "$?"
 
 # --- summary ---------------------------------------------------------------
 

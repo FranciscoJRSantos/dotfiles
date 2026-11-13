@@ -1,0 +1,10 @@
+[Unit]
+Description=Daily restic backup
+
+[Timer]
+OnCalendar=*-*-* 12:30:00
+# A run missed while the laptop was off or asleep happens at the next wake.
+Persistent=true
+
+[Install]
+WantedBy=timers.target
