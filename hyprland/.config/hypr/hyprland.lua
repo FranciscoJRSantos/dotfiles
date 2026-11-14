@@ -229,10 +229,8 @@ hl.bind(mainMod .. " + CTRL + 1", hl.dsp.workspace.move({ monitor = 1 }))
 -- else is plugged in (eDP-1 keeps ID 0 even while disabled).
 -- Office ultrawide (portrait). Matched by hardware description because it
 -- shares HDMI-A-1 with the home OLED. This is only the workspace-move target;
--- the layout comes from hyprmoncfg. No "office" profile is committed yet, so the
--- office desk resolves to the "mobile" profile and extra displays are extended
--- to the right of the laptop panel.
--- deferred: no office hyprmoncfg profile, capture it at the next office visit
+-- the layout comes from hyprmoncfg's "office" profile (laptop off, ASUS above,
+-- LG below).
 hl.bind(mainMod .. " + CTRL + 2", hl.dsp.workspace.move({ monitor = "desc:LG Electronics LG ULTRAGEAR 0x00023FA3" }))
 
 -- Move focus with mainMod + HJKL

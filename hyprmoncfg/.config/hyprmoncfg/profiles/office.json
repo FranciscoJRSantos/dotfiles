@@ -1,0 +1,145 @@
+{
+  "name": "office",
+  "created_at": "2026-11-13T00:00:00Z",
+  "updated_at": "2026-11-13T00:00:00Z",
+  "outputs": [
+    {
+      "key": "asustek computer inc|pa278qv|m1lmqs149292",
+      "match_key": "asustek computer inc|pa278qv|m1lmqs149292",
+      "name": "DP-1",
+      "description": "ASUSTek COMPUTER INC PA278QV M1LMQS149292",
+      "make": "ASUSTek COMPUTER INC",
+      "model": "PA278QV",
+      "serial": "M1LMQS149292",
+      "enabled": true,
+      "mode": "2560x1440@74.92Hz",
+      "width": 2560,
+      "height": 1440,
+      "refresh": 74.924,
+      "x": 0,
+      "y": 0,
+      "scale": 1,
+      "transform": 0,
+      "bitdepth": 8,
+      "cm": "srgb",
+      "sdr_brightness": 1,
+      "sdr_saturation": 1,
+      "sdr_min_luminance": 0.2,
+      "sdr_max_luminance": 80,
+      "min_luminance": 0
+    },
+    {
+      "key": "lg electronics|lg ultragear|0x00023fa3",
+      "match_key": "lg electronics|lg ultragear|0x00023fa3",
+      "name": "HDMI-A-1",
+      "description": "LG Electronics LG ULTRAGEAR 0x00023FA3",
+      "make": "LG Electronics",
+      "model": "LG ULTRAGEAR",
+      "serial": "0x00023FA3",
+      "enabled": true,
+      "mode": "2560x1080@143.94Hz",
+      "width": 2560,
+      "height": 1080,
+      "refresh": 143.94,
+      "x": 0,
+      "y": 1440,
+      "scale": 1,
+      "transform": 0,
+      "bitdepth": 8,
+      "cm": "srgb",
+      "sdr_brightness": 1,
+      "sdr_saturation": 1,
+      "sdr_min_luminance": 0.2,
+      "sdr_max_luminance": 80,
+      "min_luminance": 0
+    },
+    {
+      "key": "lenovo group limited|0x403a",
+      "match_key": "lenovo group limited|0x403a",
+      "name": "eDP-1",
+      "description": "Lenovo Group Limited 0x403A",
+      "make": "Lenovo Group Limited",
+      "model": "0x403A",
+      "enabled": false,
+      "mode": "1920x1200@60.00Hz",
+      "width": 1920,
+      "height": 1200,
+      "refresh": 60.001,
+      "x": 0,
+      "y": 0,
+      "scale": 1,
+      "transform": 0,
+      "bitdepth": 8,
+      "cm": "srgb",
+      "sdr_brightness": 1,
+      "sdr_saturation": 1,
+      "sdr_min_luminance": 0.2,
+      "sdr_max_luminance": 80,
+      "min_luminance": 0
+    }
+  ],
+  "workspaces": {
+    "enabled": true,
+    "strategy": "manual",
+    "max_workspaces": 9,
+    "group_size": 3,
+    "monitor_order": [
+      "lg electronics|lg ultragear|0x00023fa3",
+      "asustek computer inc|pa278qv|m1lmqs149292",
+      "lenovo group limited|0x403a"
+    ],
+    "rules": [
+      {
+        "workspace": "1",
+        "output_key": "",
+        "persistent": true
+      },
+      {
+        "workspace": "2",
+        "output_key": "",
+        "persistent": true
+      },
+      {
+        "workspace": "3",
+        "output_key": "",
+        "persistent": true
+      },
+      {
+        "workspace": "4",
+        "output_key": "",
+        "persistent": true
+      },
+      {
+        "workspace": "5",
+        "output_key": "",
+        "persistent": true
+      },
+      {
+        "workspace": "6",
+        "output_key": "",
+        "persistent": true
+      },
+      {
+        "workspace": "7",
+        "output_key": "",
+        "persistent": true
+      },
+      {
+        "workspace": "8",
+        "output_key": "",
+        "persistent": true
+      },
+      {
+        "workspace": "9",
+        "output_key": "",
+        "persistent": true
+      },
+      {
+        "workspace": "10",
+        "output_key": "",
+        "persistent": true
+      }
+    ]
+  },
+  "exec": ""
+}
